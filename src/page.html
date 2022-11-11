@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+<body>
+<h1> Temperatura </h1>
+<canvas id="myChart3" style="width:100%;max-width:600px"></canvas>
+
+</body>
+
+<script>
+
+times = [];
+temps = [];
+
+function generateData(size, min, max, maxDiff) {
+    current = (max + min) / 2;
+
+    for (i=1; i<=size; i++) {
+        dirChange = Math.random() > 0.5 ? -1 : 1;
+        times.push(i * -10);
+        temps.unshift(current = current + maxDiff * Math.random() * dirChange);
+    }
+    times.reverse();
+}
+generateData(50, 15, 27, 1);
+
+
+new Chart("myChart3", {
+    type: "line",
+    data: {
+        labels: times,
+        datasets: [{
+            data: temps,
+            borderColor: "green",
+            fill: false,
+        }],
+    },
+    options: {},
+});
+
+</script>
