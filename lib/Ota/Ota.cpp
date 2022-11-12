@@ -10,7 +10,7 @@ const char* password = "syrion275006";
 
 Ota* Ota::ota = nullptr;
 
-Ota::Ota() {}
+Ota::Ota() {} //TODO Add wifi credentials to constructor
 
 Ota* Ota::getInstance()
 {

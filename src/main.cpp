@@ -11,9 +11,11 @@
 #include <numeric>
 #include <vector>
 
-// Set WiFi credentials
+// Set WiFi credentials - Powstancow
 // #define WIFI_SSID "SYRION7525"
 // #define WIFI_PASS "syrion793650"
+
+// Set WiFi credentials - Bukowina
 #define WIFI_SSID "SYRION15175"
 #define WIFI_PASS "syrion275006"
 
@@ -36,36 +38,25 @@ const size_t LVL2BUFFERSIZE = 300;
 CBuffer<float> lvl1Bfr(LVL1BUFFERSIZE);
 CBuffer<float> L2Buffer(LVL2BUFFERSIZE);
 
+void webserverSetup(char* wifiSsid, char* wifiPassword);
+
 void handleThermometer();
 void zapis();
 char convertTemp(int32_t rawTemp);
 
 void setup() {
+  // Inietialize OTA programming
   ota->init();
 
+  // Builtin LED pin mode
   pinMode(LED_BUILTIN, OUTPUT);
 
   // Setup serial port
   const int SERIAL_PORT_SPEED = 115200;
   Serial.begin(SERIAL_PORT_SPEED);
 
-  //Begin WiFi
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(200);
-    Serial.println("Connecting to WiFi ...");
-    // TODOadd some LED signalization
- 
-  }
-  Serial.println("Wait 3s");
-  delay(3000);
-
-  // WiFi Connected
-  Serial.print("Connected! IP address: ");
-  Serial.println(WiFi.localIP());
-
-  // Start Web Server
-  web.initServer();
+  // Setup web server
+  webserverSetup(WIFI_SSID, WIFI_PASS);
 
   // ds18b20
   sensors.begin();
@@ -76,6 +67,28 @@ void loop() {
   ota->handle();
   web.handleClient();
   m_periodicallyExecute(handleThermometer, 1500);
+}
+
+
+void webserverSetup(char* wifiSsid, char* wifiPassword)
+{
+  //Begin WiFi
+  WiFi.begin(wifiSsid, wifiPassword);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(200);
+    Serial.println("Connecting to WiFi ...");
+    // TODOadd some LED signalization
+  }
+
+  Serial.println("Wait 2s");
+  delay(2000);
+
+  // WiFi Connected
+  Serial.print("Connected! IP address: ");
+  Serial.println(WiFi.localIP());
+
+  // Start Web Server
+  web.initServer();
 }
 
 
