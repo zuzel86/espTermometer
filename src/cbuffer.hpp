@@ -6,6 +6,7 @@ public:
     ~CBuffer();
 
     void write(T);
+    unsigned int getCurrentSize();
     T read(void);
     void read(T* bfr, int size);
     void clean();
@@ -20,6 +21,7 @@ private:
     T* buffer;
     unsigned int bufferSize;
     int ptr;
+    unsigned int currentSize;
 };
 
 template<class T>
@@ -27,6 +29,7 @@ CBuffer<T>::CBuffer(int size) {
     bufferSize = size;
     buffer = new T[bufferSize];
     ptr = 0;
+    currentSize = 0;
     clean();
 }
 
@@ -39,6 +42,12 @@ template<class T>
 void CBuffer<T>::write(T value) {
     nextPtr();
     buffer[ptr] = value;
+    currentSize = min(currentSize + 1, bufferSize);
+}
+
+template<class T>
+unsigned int CBuffer<T>::getCurrentSize() {
+    return currentSize;
 }
 
 template<class T>
@@ -60,6 +69,7 @@ void CBuffer<T>::clean() {
     for (unsigned int i=0; i<bufferSize; i++) {
         buffer[i] = 0;
     }
+    currentSize = 0;
 }
 
 template<class T>

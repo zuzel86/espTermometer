@@ -1,4 +1,3 @@
-#
 #include "webPreview.hpp"
 
 #include <ESP8266WebServer.h>
@@ -22,22 +21,26 @@ extern CBuffer<float> lvl1Bfr;
 
 String join(int* buffer, size_t size, const char* separator) {
   String result;
-  for (size_t i=0; i<size-1; i++) {
-    result += buffer[i];
-    result += separator;
+  if (size > 0) {
+    for (size_t i=0; i<size-1; i++) {
+      result += buffer[i];
+      result += separator;
+    }
+    result += buffer[size-1];
   }
-  result += buffer[size-1];
 
   return result;
 }
 
 String join(float* buffer, size_t size, const char* separator) {
   String result;
-  for (size_t i=0; i<size-1; i++) {
-    result += buffer[i];
-    result += separator;
+  if (size > 0) {
+    for (size_t i=0; i<size-1; i++) {
+      result += buffer[i];
+      result += separator;
+    }
+    result += buffer[size-1];
   }
-  result += buffer[size-1];
 
   return result;
 }
@@ -84,19 +87,20 @@ void WebPreview::handleClient() {
 }
 
 String generatePage() {
+  unsigned int currentSize = lvl1Bfr.getCurrentSize();
 
   String temps("temps = [");
-  temps += printBuffer(lvl1Bfr, static_cast<size_t>(LVL1BUFFERSIZE));
+  temps += printBuffer(lvl1Bfr, static_cast<size_t>(currentSize));
   temps += "];";
   // Serial.println(temps.c_str());
 
-  int tempArgs[LVL1BUFFERSIZE];
-  for (int i=0; i<LVL1BUFFERSIZE; i++) {
+  int tempArgs[currentSize];
+  for (unsigned int i=0; i<currentSize; i++) {
     tempArgs[i] = i;
   }
 
   String times("times = [");
-  times += join(tempArgs, LVL1BUFFERSIZE, ", ");
+  times += join(tempArgs, currentSize, ", ");
   times += "];";
   // Serial.println(times.c_str());
 
