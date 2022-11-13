@@ -1,3 +1,6 @@
+#pragma once
+
+#include "Arduino.h"
 
 template<class T>
 class CBuffer {

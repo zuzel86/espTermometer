@@ -3,6 +3,10 @@
 #include <ESP8266WebServer.h>
 #include <WString.h>
 #include "cbuffer.hpp"
+#include "TemperatureStorage.hpp"
+
+extern TemperatureStorage ts;
+extern const size_t LVL1BUFFERSIZE;
 
 
 String generatePage();
@@ -10,16 +14,7 @@ String generatePage();
 // Create a new web server
 ESP8266WebServer webserver(80);
 
-static int cnt = 0;
-extern float currentTemp;
-
-const size_t LVL1BUFFERSIZE = 240;
-const size_t LVL2BUFFERSIZE = 300;
-extern CBuffer<float> lvl1Bfr;
-
-
-
-String join(int* buffer, size_t size, const char* separator) {
+String join(int* buffer, size_t size, const char* separator) {      //TODO: remove - functionality moved to TemperatureStorage
   String result;
   if (size > 0) {
     for (size_t i=0; i<size-1; i++) {
@@ -32,7 +27,7 @@ String join(int* buffer, size_t size, const char* separator) {
   return result;
 }
 
-String join(float* buffer, size_t size, const char* separator) {
+String join(float* buffer, size_t size, const char* separator) {    //TODO: remove - functionality moved to TemperatureStorage
   String result;
   if (size > 0) {
     for (size_t i=0; i<size-1; i++) {
@@ -46,7 +41,7 @@ String join(float* buffer, size_t size, const char* separator) {
 }
 
 // String printBuffer(cbuf &buffer, size_t size) {
-String printBuffer(CBuffer<float> &buffer, size_t size) {
+String printBuffer(CBuffer<float> &buffer, size_t size) {           //TODO: remove - functionality moved to TemperatureStorage
   float localBuffer[size];
   buffer.read(localBuffer, size);
 
@@ -63,19 +58,8 @@ void WebPreview::initServer() {
 }
 
 void WebPreview::rootPage() {
-
-  // lvl1Bfr.toString();
-
-  String bufferTxt;
-  bufferTxt += "Counter: ";
-  bufferTxt += ++cnt;
-  bufferTxt += "\nTemp: ";
-  bufferTxt += currentTemp;
-
-  String buf2 = generatePage();
-
-  // webserver.send(200, "text/plain", bufferTxt.c_str());
-  webserver.send(200, "text/html", buf2.c_str());
+  String buf = generatePage();
+  webserver.send(200, "text/html", buf.c_str());
 }
 
 void WebPreview::notfoundPage() {
@@ -87,20 +71,17 @@ void WebPreview::handleClient() {
 }
 
 String generatePage() {
-  unsigned int currentSize = lvl1Bfr.getCurrentSize();
-
-  String temps("temps = [");
-  temps += printBuffer(lvl1Bfr, static_cast<size_t>(currentSize));
-  temps += "];";
+  String temps = ts.getL1BufferFormatted();
   // Serial.println(temps.c_str());
 
-  int tempArgs[currentSize];
-  for (unsigned int i=0; i<currentSize; i++) {
+size_t bufsize = ts.getL1BufferCurrentSize();
+  int tempArgs[bufsize];
+  for (unsigned int i=0; i<bufsize; i++) {
     tempArgs[i] = i;
   }
 
   String times("times = [");
-  times += join(tempArgs, currentSize, ", ");
+  times += join(tempArgs, bufsize, ", ");
   times += "];";
   // Serial.println(times.c_str());
 

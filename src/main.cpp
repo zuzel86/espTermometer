@@ -1,12 +1,13 @@
+
 #include <ESP8266WiFi.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
 #include "Ota.hpp"
 
-#include "cbuffer.hpp"
 #include "webPreview.hpp"
 #include "pseudoThread.hpp"
+#include "TemperatureStorage.hpp"
 
 #include <numeric>
 #include <vector>
@@ -33,10 +34,7 @@ DallasTemperature sensors(&oneWire);
 // Storing temperatures
 float currentTemp = 0.0;
 char convertedTemp = 0;
-const size_t LVL1BUFFERSIZE = 240;
-const size_t LVL2BUFFERSIZE = 300;
-CBuffer<float> lvl1Bfr(LVL1BUFFERSIZE);
-CBuffer<float> L2Buffer(LVL2BUFFERSIZE);
+TemperatureStorage ts;
 
 void webserverSetup(char* wifiSsid, char* wifiPassword);
 
@@ -116,31 +114,14 @@ void handleThermometer()
   // delay(500);
 }
 
+
 void zapis() {
   Serial.print("Zapis do bufora: ");
   Serial.println(currentTemp);
 
-  lvl1Bfr.write(currentTemp);
-
-//-------------------------------------
-  // static int tmp = 0;
-  // if (++tmp % 8) {
-  //   float tmpBug[8];
-  //   lvl1Bfr.read(tmpBug, 8);
-  //   std::vector<float> v(tmpBug, tmpBug + 8);
-
-  //   lvl1Bfr.toString();
-  //   for (int i=0; i<8; i++) {
-  //     Serial.println(v[i]);
-  //   }
-
-  //   float avg = std::accumulate(v.begin(), v.end(), 0) / 8.0;
-  //   Serial.print("średnia: ");
-  //   Serial.println(avg);
-  //   L2Buffer.write(avg);
-  // }
-//-------------------------------------
+  ts.storeTemperature(currentTemp);
 }
+
 
 char convertTemp(int32_t rawTemp) {
   float tempC = sensors.rawToCelsius(rawTemp);
@@ -148,4 +129,3 @@ char convertTemp(int32_t rawTemp) {
 
   return result;
 }
-
