@@ -24,31 +24,8 @@ String join(int* buffer, size_t size, const char* separator) {      //TODO: remo
     result += buffer[size-1];
   }
 
-  return result;
-}
-
-String join(float* buffer, size_t size, const char* separator) {    //TODO: remove - functionality moved to TemperatureStorage
-  String result;
-  if (size > 0) {
-    for (size_t i=0; i<size-1; i++) {
-      result += buffer[i];
-      result += separator;
-    }
-    result += buffer[size-1];
-  }
 
   return result;
-}
-
-// String printBuffer(cbuf &buffer, size_t size) {
-String printBuffer(CBuffer<float> &buffer, size_t size) {           //TODO: remove - functionality moved to TemperatureStorage
-  float localBuffer[size];
-  buffer.read(localBuffer, size);
-
-  String str = join(localBuffer, size, ", ");
-  Serial.println(str.c_str());
-
-  return str;
 }
 
 void WebPreview::initServer() {

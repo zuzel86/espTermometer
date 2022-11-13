@@ -36,13 +36,13 @@ float currentTemp = 0.0;
 char convertedTemp = 0;
 TemperatureStorage ts;
 
-void webserverSetup(char* wifiSsid, char* wifiPassword);
-
+void connectWiFi(char* wifiSsid, char* wifiPassword);
 void handleThermometer();
 void zapis();
 char convertTemp(int32_t rawTemp);
 
-void setup() {
+void setup()
+{
   // Inietialize OTA programming
   ota->init();
 
@@ -54,21 +54,23 @@ void setup() {
   Serial.begin(SERIAL_PORT_SPEED);
 
   // Setup web server
-  webserverSetup(WIFI_SSID, WIFI_PASS);
+  connectWiFi(WIFI_SSID, WIFI_PASS);
+  web.initServer();
 
   // ds18b20
   sensors.begin();
 }
 
 
-void loop() {
+void loop()
+{
   ota->handle();
   web.handleClient();
   m_periodicallyExecute(handleThermometer, 1500);
 }
 
 
-void webserverSetup(char* wifiSsid, char* wifiPassword)
+void connectWiFi(char* wifiSsid, char* wifiPassword)
 {
   //Begin WiFi
   WiFi.begin(wifiSsid, wifiPassword);
@@ -84,9 +86,6 @@ void webserverSetup(char* wifiSsid, char* wifiPassword)
   // WiFi Connected
   Serial.print("Connected! IP address: ");
   Serial.println(WiFi.localIP());
-
-  // Start Web Server
-  web.initServer();
 }
 
 
