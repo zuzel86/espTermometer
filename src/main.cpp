@@ -1,24 +1,15 @@
 
-#include <ESP8266WiFi.h>
+#include "Ota.hpp"
+
 #include <OneWire.h>
 #include <DallasTemperature.h>
-
-#include "Ota.hpp"
 
 #include "webPreview.hpp"
 #include "pseudoThread.hpp"
 #include "TemperatureStorage.hpp"
+#include "FsMapStorage.hpp"
+#include "ConnectWifi.hpp"
 
-#include <numeric>
-#include <vector>
-
-// Set WiFi credentials - Powstancow
-// #define WIFI_SSID "SYRION7525"
-// #define WIFI_PASS "syrion793650"
-
-// Set WiFi credentials - Bukowina
-#define WIFI_SSID "SYRION15175"
-#define WIFI_PASS "syrion275006"
 
 // On the air programming
 Ota* ota = Ota::getInstance();
@@ -36,7 +27,6 @@ float currentTemp = 0.0;
 char convertedTemp = 0;
 TemperatureStorage ts;
 
-void connectWiFi(char* wifiSsid, char* wifiPassword);
 void handleThermometer();
 void zapis();
 char convertTemp(int32_t rawTemp);
@@ -53,12 +43,22 @@ void setup()
   const int SERIAL_PORT_SPEED = 115200;
   Serial.begin(SERIAL_PORT_SPEED);
 
-  // Setup web server
-  connectWiFi(WIFI_SSID, WIFI_PASS);
-  web.initServer();
-
   // ds18b20
   sensors.begin();
+
+  // Get WiFi creentials
+  FsMapStorage wifiCredentials("/credentials.txt");
+  int storedPasswordsCnt = wifiCredentials.count();
+
+  // Try to connect WiFi
+  for (int i=0; i<storedPasswordsCnt; i++) {
+    String wifiSsid = wifiCredentials.getSsid(i);
+    String wifiPassword = wifiCredentials.getPassword(i);
+    if (connectWiFi(wifiSsid.c_str(), wifiPassword.c_str())) break;
+  }
+
+  // Setup web server
+  web.initServer();
 }
 
 
@@ -67,25 +67,6 @@ void loop()
   ota->handle();
   web.handleClient();
   m_periodicallyExecute(handleThermometer, 1500);
-}
-
-
-void connectWiFi(char* wifiSsid, char* wifiPassword)
-{
-  //Begin WiFi
-  WiFi.begin(wifiSsid, wifiPassword);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(200);
-    Serial.println("Connecting to WiFi ...");
-    // TODOadd some LED signalization
-  }
-
-  Serial.println("Wait 2s");
-  delay(2000);
-
-  // WiFi Connected
-  Serial.print("Connected! IP address: ");
-  Serial.println(WiFi.localIP());
 }
 
 
