@@ -38,8 +38,14 @@ std::pair<String, String> FsMapStorage::explode(String line) {
 
     return sp;
 }
+/**
+ * @brief Read available passowrds from file and stores it interrnally.
+ *
+ * @param fileName Name of file to read.
+ */
 
 void FsMapStorage::parse(const char* fileName) {
+    bool fsMountedSuccess = LittleFS.begin();       // TODO: Interpret the returned value in the future
     File _file = LittleFS.open(fileName, "r");
     while (_file.available()) {
         String s = _file.readStringUntil('\n');
@@ -48,4 +54,5 @@ void FsMapStorage::parse(const char* fileName) {
         storage[sp.first] = sp.second;
     }
     _file.close();
+    LittleFS.end();
 }

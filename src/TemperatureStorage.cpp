@@ -1,25 +1,105 @@
 
 #include "TemperatureStorage.hpp"
 
+#include "pseudoThread.hpp"
+#include "stringUtils.hpp"
+
+float currentTemperature = 0;
+
+  /**
+   * @brief Construct a new Temperature Storage object.
+   * Initializes the pseudo thread identifiers to use in L1 and L2 buffers.
+   */
 TemperatureStorage::TemperatureStorage() : level1Buffer(LVL1BUFFERSIZE), level2Buffer(LVL2BUFFERSIZE)
 {
+    l1pseudoThreadId = getIdentifier();
+    l2pseudoThreadId = getIdentifier();
 }
 
-void TemperatureStorage::storeTemperature(float temperature)
+/**
+ * @brief Sets the current temperature and updates the L1 and L2 buffers if the proper
+ * amount of time since the last update for each buffer has left.
+ *
+ * @param temperature The new temperature to store.
+ */
+void TemperatureStorage::updateTemperature(float temperature)
 {
-    level1Buffer.write(temperature);
+    currentTemperature = temperature;
+
+    m_std_periodicallyExecute(l1pseudoThreadId, std::bind(&TemperatureStorage::storeCurrentToL1Buffer, this), 15000);
+    m_std_periodicallyExecute(l2pseudoThreadId, std::bind(&TemperatureStorage::storeCurrentToL2Buffer, this), 60000);
 }
 
+/**
+ * @brief Returns the current size of L1 buffer
+ *
+ * @return size_t Current L1 buffer size.
+ */
 size_t TemperatureStorage::getL1BufferCurrentSize()
 {
     return level1Buffer.getCurrentSize();
 }
 
+/**
+ * @brief Returns the current size of L2 buffer
+ *
+ * @return size_t Current L2 buffer size.
+ */
+size_t TemperatureStorage::getL2BufferCurrentSize()
+{
+    return level2Buffer.getCurrentSize();
+}
+
+/**
+ * @brief Returns L1 buffer as a String, formatted as comma separated double values in the square bracket.
+ *
+ * @return String Formatted L1 buffer
+ */
 String TemperatureStorage::getL1BufferFormatted()
 {
-    size_t size = level1Buffer.getCurrentSize();
+    return getBufferFormatted(level1Buffer);
+}
+
+/**
+ * @brief Returns L2 buffer as a String, formatted as comma separated double values in the square bracket.
+ *
+ * @return String Formatted L2 buffer
+ */
+String TemperatureStorage::getL2BufferFormatted()
+{
+    return getBufferFormatted(level2Buffer);
+}
+
+//************************* Private members *************************
+
+/**
+ * @brief Stores the current temprature in L1 buffer
+ */
+void TemperatureStorage::storeCurrentToL1Buffer(void)
+{
+    level1Buffer.write(currentTemperature);
+}
+
+/**
+ * @brief Stores the current temprature in L2 buffer
+ */
+void TemperatureStorage::storeCurrentToL2Buffer(void)
+{
+    level2Buffer.write(currentTemperature);
+}
+
+/**
+ * @brief Get the Buffer Formatted as String.
+ * The String format is a comma, separated double valuse in square bracket.
+ *
+ * @param buffer Input buffer
+ * @return String
+ */
+String TemperatureStorage::getBufferFormatted(CBuffer<float> &buffer)
+{
+    size_t size = buffer.getCurrentSize();
     float localBuffer[size];
-    level1Buffer.read(localBuffer, size);
+    buffer.read(localBuffer, size);
     String str = join(localBuffer, size, ", ");
 
     String temps("temps = [");
@@ -27,47 +107,4 @@ String TemperatureStorage::getL1BufferFormatted()
     temps += "];";
 
     return temps;
-}
-
-size_t TemperatureStorage::getL2BufferCurrentSize()
-{
-    return level2Buffer.getCurrentSize();
-}
-
-String TemperatureStorage::getL2BufferFormatted()
-{
-    String temps("temps = [");
-    temps += "];";
-
-    return temps;
-}
-
-//************************* Privatr members *************************
-
-String TemperatureStorage::join(int* buffer, size_t size, const char* separator)
-{
-    String result;
-    if (size > 0) {
-        for (size_t i=0; i<size-1; i++) {
-            result += buffer[i];
-            result += separator;
-        }
-        result += buffer[size-1];
-    }
-
-    return result;
-}
-
-String TemperatureStorage::join(float* buffer, size_t size, const char* separator)
-{
-    String result;
-    if (size > 0) {
-        for (size_t i=0; i<size-1; i++) {
-            result += buffer[i];
-            result += separator;
-        }
-        result += buffer[size-1];
-    }
-
-    return result;
 }

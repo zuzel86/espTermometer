@@ -1,6 +1,8 @@
 
+#pragma once
+
 class WebPreview {
-    
+
     // Page that open when userrequest an unexisting page
     static void notfoundPage();
 

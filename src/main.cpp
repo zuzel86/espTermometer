@@ -1,15 +1,15 @@
 
-#include "Ota.hpp"
-
-#include <OneWire.h>
 #include <DallasTemperature.h>
+#include <OneWire.h>
 
-#include "webPreview.hpp"
+#include "ConnectWifi.hpp"
+#include "FsMapStorage.hpp"
+#include "Ota.hpp"
 #include "pseudoThread.hpp"
 #include "TemperatureStorage.hpp"
-#include "FsMapStorage.hpp"
-#include "ConnectWifi.hpp"
+#include "WebPreview.hpp"
 
+void getTemperature();
 
 // On the air programming
 Ota* ota = Ota::getInstance();
@@ -24,16 +24,11 @@ DallasTemperature sensors(&oneWire);
 
 // Storing temperatures
 float currentTemp = 0.0;
-char convertedTemp = 0;
 TemperatureStorage ts;
-
-void handleThermometer();
-void zapis();
-char convertTemp(int32_t rawTemp);
 
 void setup()
 {
-  // Inietialize OTA programming
+  // Initialize OTA programming
   ota->init();
 
   // Builtin LED pin mode
@@ -53,59 +48,54 @@ void setup()
   // Try to connect WiFi
   for (int i=0; i<storedPasswordsCnt; i++) {
     String wifiSsid = wifiCredentials.getSsid(i);
+    Serial.print("Login: ");
+    Serial.println(wifiSsid);
     String wifiPassword = wifiCredentials.getPassword(i);
-    if (connectWiFi(wifiSsid.c_str(), wifiPassword.c_str())) break;
+    Serial.print("Haslo: ");
+    Serial.println(wifiPassword);
+    Serial.println(String("Łaczenie z siecią ") + wifiSsid + " ...");
+    if (connectWiFi(wifiSsid.c_str(), wifiPassword.c_str())) {
+      break;
+    }
+    Serial.println("Niepowodzenie.");
   }
 
   // Setup web server
   web.initServer();
-}
 
+  Serial.println("Fs: `");
+  LittleFS.begin();
+
+  Dir dir = LittleFS.openDir("/");
+  while (dir.next()) {
+      Serial.print(dir.fileName());
+      if(dir.fileSize()) {
+          File f = dir.openFile("r");
+          Serial.print(" size: ");
+          Serial.println(f.size());
+      }
+  }
+
+  LittleFS.end();
+  Serial.println("----------------");
+}
 
 void loop()
 {
   ota->handle();
   web.handleClient();
-  m_periodicallyExecute(handleThermometer, 1500);
+
+  // read temp
+  static unsigned long threadId = getIdentifier();
+  m_std_periodicallyExecute(threadId, std::bind(getTemperature), 3500);
+
+  // store temp
+  ts.updateTemperature(currentTemp);
 }
 
 
-void handleThermometer()
-{
+void getTemperature() {
   sensors.requestTemperatures();
-
-  float temperatureC = sensors.getTempCByIndex(0);
-  currentTemp = temperatureC;
-
-  char prompt[20];
-  sprintf(prompt, "Temp: %02f ºC", currentTemp);
-  periodicallyPrint(prompt, 2500);
-
-  // // get temperature
-  // const uint8_t DEVICE_INDEX = 0U;
-  // DeviceAddress deviceAddress;
-	// sensors.getAddress(deviceAddress, DEVICE_INDEX);
-  // int32_t rawTemp = sensors.getTemp(deviceAddress);
-  // // convert temperature
-  // convertedTemp = convertTemp(rawTemp);
-
-  // store temperature
-  periodicallyExecute(zapis, 60000);
-  // delay(500);
-}
-
-
-void zapis() {
-  Serial.print("Zapis do bufora: ");
+  currentTemp = sensors.getTempCByIndex(0);
   Serial.println(currentTemp);
-
-  ts.storeTemperature(currentTemp);
-}
-
-
-char convertTemp(int32_t rawTemp) {
-  float tempC = sensors.rawToCelsius(rawTemp);
-  char result = static_cast<char>(std::round(tempC));
-
-  return result;
 }
