@@ -9,6 +9,7 @@ public:
     ~CBuffer();
 
     void write(T);
+    unsigned int getBufferSize();
     unsigned int getCurrentSize();
     T read(void);
     void read(T* bfr, int size);
@@ -46,6 +47,11 @@ void CBuffer<T>::write(T value) {
     nextPtr();
     buffer[ptr] = value;
     currentSize = min(currentSize + 1, bufferSize);
+}
+
+template<class T>
+unsigned int CBuffer<T>::getBufferSize() {
+    return bufferSize;
 }
 
 template<class T>

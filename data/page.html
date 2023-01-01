@@ -2,8 +2,11 @@
 <html>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 <body>
-<h1> Temperatura </h1>
-<canvas id="myChart3" style="width:100%;max-width:600px"></canvas>
+<h1> Pomiar temperatury </h1>
+<h2> Ostatnia godzina (aktualizacja co 15s)</h2>
+<canvas id="chart_x" style="width:100%;max-width:1200px"></canvas>
+<h2> Ostatnie 5 godzin (aktualizacja co 1 min)</h2>
+<canvas id="chart_xx" style="width:100%;max-width:1200px"></canvas>
 
 </body>
 </html>
@@ -13,12 +16,28 @@
 {{times}}
 {{temps}}
 
-new Chart("myChart3", {
+{{times2}}
+{{temps2}}
+
+new Chart("chart_x", {
     type: "line",
     data: {
         labels: times,
         datasets: [{
             data: temps,
+            borderColor: "green",
+            fill: false,
+        }],
+    },
+    options: {},
+});
+
+new Chart("chart_xx", {
+    type: "line",
+    data: {
+        labels: times2,
+        datasets: [{
+            data: temps2,
             borderColor: "green",
             fill: false,
         }],

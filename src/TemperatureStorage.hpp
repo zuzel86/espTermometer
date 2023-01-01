@@ -31,6 +31,20 @@ public:
   void updateTemperature(float temperature);
 
   /**
+   * @brief Returns size of the L1 buffer
+   *
+   * @return size_t L1 buffer size.
+   */
+  size_t getL1BufferSize();
+
+  /**
+   * @brief Returns size of the L2 buffer
+   *
+   * @return size_t L2 buffer size.
+   */
+  size_t getL2BufferSize();
+
+  /**
    * @brief Returns the current size of L1 buffer
    *
    * @return size_t Current L1 buffer size.

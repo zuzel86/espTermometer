@@ -8,7 +8,6 @@
 #include "stringUtils.hpp"
 
 extern TemperatureStorage ts;
-extern const size_t LVL1BUFFERSIZE;
 
 
 String generatePage();
@@ -37,18 +36,28 @@ void WebPreview::handleClient() {
 }
 
 String generatePage() {
-  String temps = ts.getL1BufferFormatted();
-  // Serial.println(temps.c_str());
+  String temps = "temps = " + ts.getL1BufferFormatted() + ";";
+  String temps2 = "temps2 = " + ts.getL2BufferFormatted() + ";";
 
-size_t bufsize = ts.getL1BufferCurrentSize();
-  int tempArgs[bufsize];
-  for (unsigned int i=0; i<bufsize; i++) {
+  size_t buf1size = ts.getL1BufferCurrentSize();
+  size_t buf2size = ts.getL2BufferCurrentSize();
+  int tempArgs[buf1size];
+  for (unsigned int i=0; i<buf1size; i++) {
     tempArgs[i] = i;
   }
 
+  int tempArgs2[buf2size];
+  for (unsigned int i=0; i<buf2size; i++) {
+    tempArgs2[i] = i;
+  }
+
   String times("times = [");
-  times += join(tempArgs, bufsize, ", ");
+  times += join(tempArgs, buf1size, ", ");
   times += "];";
+
+  String times2("times2 = [");
+  times2 += join(tempArgs2, buf2size, ", ");
+  times2 += "];";
 
   String content;
 
@@ -65,6 +74,8 @@ size_t bufsize = ts.getL1BufferCurrentSize();
       // Make substitutions
       if (line == String("{{times}}")) line = times;
       if (line == String("{{temps}}")) line = temps;
+      if (line == String("{{times2}}")) line = times2;
+      if (line == String("{{temps2}}")) line = temps2;
 
       content += line;
   }

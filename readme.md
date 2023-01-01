@@ -2,24 +2,22 @@
 # WiFI Thermometer
 
 ## Hardware
-
-### ESP8266
-
-### SD card
-
-### OLED display
+- [] Esp8266 - base module
+- [] Ds18B20 - temperature sensor
+- [] OLED display
+- [] Sd card reader
 
 ## Features
 
 ### Internal
 
-- [ ] Temperature measurement
-- [ ] Temperature store in RAM
+- [*] Temperature measurement
+- [*] Temperature store in RAM
 - [ ] Temperature store in SD
 
 ### Communication
 
 - [ ] Show current temperature (Web)
 - [ ] Show current temp (OLED)
-- [ ] Show history (Web)
+- [*] Show history (Web)
 - [ ] Show history (OLED)

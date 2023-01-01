@@ -17,6 +17,26 @@ TemperatureStorage::TemperatureStorage() : level1Buffer(LVL1BUFFERSIZE), level2B
 }
 
 /**
+ * @brief Returns size of the L1 buffer
+ *
+ * @return size_t L1 buffer size.
+ */
+size_t TemperatureStorage::getL1BufferSize()
+{
+    return level1Buffer.getBufferSize();
+}
+
+/**
+ * @brief Returns size of the L2 buffer
+ *
+ * @return size_t L2 buffer size.
+ */
+size_t TemperatureStorage::getL2BufferSize()
+{
+    return level2Buffer.getBufferSize();
+}
+
+/**
  * @brief Sets the current temperature and updates the L1 and L2 buffers if the proper
  * amount of time since the last update for each buffer has left.
  *
@@ -102,7 +122,7 @@ String TemperatureStorage::getBufferFormatted(CBuffer<float> &buffer)
     buffer.read(localBuffer, size);
     String str = join(localBuffer, size, ", ");
 
-    String temps("temps = [");
+    String temps ("[");
     temps += str;
     temps += "];";
 

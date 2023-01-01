@@ -3,7 +3,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
 <body>
 <h1> Temperatura </h1>
-<canvas id="myChart3" style="width:100%;max-width:600px"></canvas>
+<canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+<canvas id="myChart2" style="width:100%;max-width:600px"></canvas>
 
 </body>
 
@@ -12,7 +13,10 @@
 times = [];
 temps = [];
 
-function generateData(size, min, max, maxDiff) {
+times2 = [];
+temps2 = [];
+
+function generateData(size, min, max, maxDiff, times, temps) {
     current = (max + min) / 2;
 
     for (i=1; i<=size; i++) {
@@ -22,15 +26,29 @@ function generateData(size, min, max, maxDiff) {
     }
     times.reverse();
 }
-generateData(50, 15, 27, 1);
+generateData(25, 15, 27, 1, times, temps);
+generateData(125, 15, 27, 1, times2, temps2);
 
 
-new Chart("myChart3", {
+new Chart("myChart", {
     type: "line",
     data: {
         labels: times,
         datasets: [{
             data: temps,
+            borderColor: "green",
+            fill: false,
+        }],
+    },
+    options: {},
+});
+
+new Chart("myChart2", {
+    type: "line",
+    data: {
+        labels: times2,
+        datasets: [{
+            data: temps2,
             borderColor: "green",
             fill: false,
         }],
