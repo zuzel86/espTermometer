@@ -1,10 +1,20 @@
 #pragma once
 
-#include "cbuffer.hpp"
 #include <WString.h>
 
-const size_t LVL1BUFFERSIZE = 240;
-const size_t LVL2BUFFERSIZE = 300;
+#include "cbuffer.hpp"
+#include "MovingAverage.hpp"
+
+
+const size_t BUFFER_UPDATE_MS_INTERVAL_L1 = 15000;    // Buffer 1 store temperature ratio in ms.
+const size_t BUFFER_UPDATE_MS_INTERVAL_L2 = 60000;    // Buffer 2 store temperature ratio in ms.
+
+const size_t RANGE_TIME_H_PLOT1 = 1;                  // Plot 2 range of hours
+const size_t RANGE_TIME_H_PLOT2 = 5;                  // Plot 2 range of hours
+
+const size_t BUFFER_SIZE_LEVEL1 = RANGE_TIME_H_PLOT1 * 60 * 60000 / BUFFER_UPDATE_MS_INTERVAL_L1;   // Size of buffer 1
+const size_t BUFFER_SIZE_LEVEL2 = RANGE_TIME_H_PLOT2 * 60 * 60000 / BUFFER_UPDATE_MS_INTERVAL_L2;   // Size of buffer 2
+
 
 /**
  * @brief Storage for temperatures given in float.
@@ -14,6 +24,9 @@ class TemperatureStorage
 {
   CBuffer<float> level1Buffer;
   CBuffer<float> level2Buffer;
+
+  MovingAverage avgTemperatureL1;
+  MovingAverage avgTemperatureL2;
 
 public:
   /**
@@ -82,6 +95,18 @@ private:
    * @brief Stores the current temprature in L2 buffer
    */
   void storeCurrentToL2Buffer(void);
+
+  /**
+   * @brief Stores moving average temperature to save in L1 buffer
+   * in the proper moment of time.
+   */
+  void updateL1AvgTemperature(void);
+
+  /**
+   * @brief Stores moving average temperature to save in L2 buffer
+   * in the proper moment of time.
+   */
+  void updateL2AvgTemperature(void);
 
   /**
    * @brief Get the Buffer Formatted as String.

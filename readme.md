@@ -2,8 +2,8 @@
 # WiFI Thermometer
 
 ## Hardware
-- [] Esp8266 - base module
-- [] Ds18B20 - temperature sensor
+- [*] Esp8266 - base module
+- [*] Ds18B20 - temperature sensor
 - [] OLED display
 - [] Sd card reader
 
@@ -21,3 +21,10 @@
 - [ ] Show current temp (OLED)
 - [*] Show history (Web)
 - [ ] Show history (OLED)
+
+## Next step
+
+Dopięcie wyświetlacza OLED
+Multi - termometrowość
+Dopięcie diody RGB
+Dopięcie czytnika SD

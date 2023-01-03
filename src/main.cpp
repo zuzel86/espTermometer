@@ -25,6 +25,7 @@ DallasTemperature sensors(&oneWire);
 // Storing temperatures
 float currentTemp = 0.0;
 TemperatureStorage ts;
+const size_t MEASURE_INTERVAL = 3500;
 
 void setup()
 {
@@ -87,7 +88,7 @@ void loop()
 
   // read temp
   static unsigned long threadId = getIdentifier();
-  m_std_periodicallyExecute(threadId, std::bind(getTemperature), 3500);
+  executeIfTimeLeft(threadId, MEASURE_INTERVAL, std::bind(getTemperature));
 
   // store temp
   ts.updateTemperature(currentTemp);

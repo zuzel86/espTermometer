@@ -10,7 +10,7 @@ float currentTemperature = 0;
    * @brief Construct a new Temperature Storage object.
    * Initializes the pseudo thread identifiers to use in L1 and L2 buffers.
    */
-TemperatureStorage::TemperatureStorage() : level1Buffer(LVL1BUFFERSIZE), level2Buffer(LVL2BUFFERSIZE)
+TemperatureStorage::TemperatureStorage() : level1Buffer(BUFFER_SIZE_LEVEL1), level2Buffer(BUFFER_SIZE_LEVEL2)
 {
     l1pseudoThreadId = getIdentifier();
     l2pseudoThreadId = getIdentifier();
@@ -46,8 +46,12 @@ void TemperatureStorage::updateTemperature(float temperature)
 {
     currentTemperature = temperature;
 
-    m_std_periodicallyExecute(l1pseudoThreadId, std::bind(&TemperatureStorage::storeCurrentToL1Buffer, this), 15000);
-    m_std_periodicallyExecute(l2pseudoThreadId, std::bind(&TemperatureStorage::storeCurrentToL2Buffer, this), 60000);
+    executeIfTimeLeft(l1pseudoThreadId, BUFFER_UPDATE_MS_INTERVAL_L1,
+                        std::bind(&TemperatureStorage::storeCurrentToL1Buffer, this),
+                        std::bind(&TemperatureStorage::updateL1AvgTemperature, this));
+    executeIfTimeLeft(l2pseudoThreadId, BUFFER_UPDATE_MS_INTERVAL_L2,
+                        std::bind(&TemperatureStorage::storeCurrentToL2Buffer, this),
+                        std::bind(&TemperatureStorage::updateL2AvgTemperature, this));
 }
 
 /**
@@ -93,19 +97,43 @@ String TemperatureStorage::getL2BufferFormatted()
 //************************* Private members *************************
 
 /**
- * @brief Stores the current temprature in L1 buffer
+ * @brief Stores the average temprature in L1 buffer,
+ * and resets average temperature buffer.
  */
 void TemperatureStorage::storeCurrentToL1Buffer(void)
 {
-    level1Buffer.write(currentTemperature);
+    updateL1AvgTemperature();
+    level1Buffer.write(avgTemperatureL1.getCurrentValue());
+    avgTemperatureL1.reset();
 }
 
 /**
- * @brief Stores the current temprature in L2 buffer
+ * @brief Stores the average temprature in L2 buffer,
+ * and resets average temperature buffer.
  */
 void TemperatureStorage::storeCurrentToL2Buffer(void)
 {
-    level2Buffer.write(currentTemperature);
+    updateL2AvgTemperature();
+    level2Buffer.write(avgTemperatureL2.getCurrentValue());
+    avgTemperatureL2.reset();
+}
+
+/**
+ * @brief Stores moving average temperature to save in L1 buffer
+ * in the proper moment of time.
+ */
+void TemperatureStorage::updateL1AvgTemperature(void)
+{
+    avgTemperatureL1.update(currentTemperature);
+}
+
+/**
+ * @brief Stores moving average temperature to save in L2 buffer
+ * in the proper moment of time.
+ */
+void TemperatureStorage::updateL2AvgTemperature(void)
+{
+    avgTemperatureL2.update(currentTemperature);
 }
 
 /**
