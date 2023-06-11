@@ -1,24 +1,39 @@
 
 #include "FsMapStorage.hpp"
 
-
+/**
+ * @brief Construct a new FsMapStorage object and fill the storage_meeber, with dhe data from the given file.
+ *
+ * @param srcPath LittleFS file path.
+ */
 FsMapStorage::FsMapStorage(const char* srcPath) {
     parse(srcPath);
 }
 
-int FsMapStorage::count() {
-    return storage.size();
+/**
+ * @brief Returns the amount of current stored <SSID, Passwd> pairs.
+ *
+ * @return int Amount of stored pairs.
+ */
+int FsMapStorage::count() const {
+    return storage_.size();
 }
 
-String FsMapStorage::getSsid(int index) {
-    auto it = storage.begin();
+/**
+ * @brief Gets the SSID at the given index.
+ *
+ * @param index Index of SSID to return.
+ * @return const String& SSID
+ */
+const String& FsMapStorage::getSsid(int index) const {
+    auto it = storage_.begin();
     std::advance(it, index);
 
     return it->first;
 }
 
-String FsMapStorage::getPassword(int index) {
-    auto it = storage.begin();
+const String& FsMapStorage::getPassword(int index) const {
+    auto it = storage_.begin();
     std::advance(it, index);
 
     return it->second;
@@ -39,11 +54,10 @@ std::pair<String, String> FsMapStorage::explode(String line) {
     return sp;
 }
 /**
- * @brief Read available passowrds from file and stores it interrnally.
+ * @brief Read available passowrds from file and stores it in the storage_ member.
  *
  * @param fileName Name of file to read.
  */
-
 void FsMapStorage::parse(const char* fileName) {
     bool fsMountedSuccess = LittleFS.begin();       // TODO: Interpret the returned value in the future
     File _file = LittleFS.open(fileName, "r");
@@ -51,7 +65,7 @@ void FsMapStorage::parse(const char* fileName) {
         String s = _file.readStringUntil('\n');
         std::pair sp = explode(s);
 
-        storage[sp.first] = sp.second;
+        storage_[sp.first] = sp.second;             // TODO: We not need to use _storage here, we can return a map or use a reference passed by arg.
     }
     _file.close();
     LittleFS.end();
