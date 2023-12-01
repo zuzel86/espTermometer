@@ -29,18 +29,24 @@ const size_t MEASURE_INTERVAL = 3500;
 
 void setup()
 {
-  // Initialize OTA programming
-  ota->init();
-
   // Builtin LED pin mode
   pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, LOW);
+  delay(200);
+  digitalWrite(LED_BUILTIN, HIGH);
 
   // Setup serial port
   const int SERIAL_PORT_SPEED = 115200;
   Serial.begin(SERIAL_PORT_SPEED);
+  Serial.println("Serial port initilized");
+
+  // Initialize OTA programming
+  ota->init();
 
   // ds18b20
   sensors.begin();
+  Serial.println("----------------");
+  Serial.println("Termometr zainicjowany");
 
   // Get WiFi creentials
   FsMapStorage wifiCredentials("/credentials.txt");
@@ -64,34 +70,33 @@ void setup()
   // Setup web server
   web.initServer();
 
-  Serial.println("Fs: `");
-  LittleFS.begin();
+  // Serial.println("Fs: `");
+  // LittleFS.begin();
 
-  Dir dir = LittleFS.openDir("/");
-  while (dir.next()) {
-      Serial.print(dir.fileName());
-      if(dir.fileSize()) {
-          File f = dir.openFile("r");
-          Serial.print(" size: ");
-          Serial.println(f.size());
-      }
-  }
-
-  LittleFS.end();
-  Serial.println("----------------");
+  // Dir dir = LittleFS.openDir("/");
+  // while (dir.next()) {
+  //     Serial.print(dir.fileName());
+  //     if(dir.fileSize()) {
+  //         File f = dir.openFile("r");
+  //         Serial.print(" size: ");
+  //         Serial.println(f.size());
+  //     }
+  // }
+  // LittleFS.end();
 }
 
 void loop()
 {
-  ota->handle();
+  // ota->handle();
   web.handleClient();
 
-  // read temp
+  // // read temp
   static unsigned long threadId = getIdentifier();
   executeIfTimeLeft(threadId, MEASURE_INTERVAL, std::bind(getTemperature));
 
-  // store temp
+  // // store temp
   ts.updateTemperature(currentTemp);
+  delay(100);
 }
 
 

@@ -5,12 +5,12 @@
 extern ArduinoOTAClass ArduinoOTA;
 
 // Replace with your network credentials
-const char* ssid = "SYRION15175";
-const char* password = "syrion275006";
+const char* ssid = "SyrionWiFi";
+const char* password = "lubiepsipatrol";
 
 Ota* Ota::ota = nullptr;
 
-Ota::Ota() {} //TODO Add wifi credentials to constructor
+Ota::Ota() {} //TODO Ważne: Add wifi credentials to constructor
 
 Ota* Ota::getInstance()
 {
@@ -22,6 +22,7 @@ Ota* Ota::getInstance()
 }
 
 void Ota::init() {
+  Serial.println("Initializing OTA Module...");
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);

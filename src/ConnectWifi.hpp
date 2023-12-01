@@ -3,7 +3,7 @@
 
 bool connectWiFi(const char* wifiSsid, const char* wifiPassword)
 {
-  int CONNECTION_TIMEOUT = 5000;
+  int CONNECTION_TIMEOUT = 10000;
   unsigned long now = millis();
 
   //Begin WiFi
