@@ -27,45 +27,56 @@ float currentTemp = 0.0;
 TemperatureStorage ts;
 const size_t MEASURE_INTERVAL = 3500;
 
-void setup()
-{
-  // Builtin LED pin mode
+void configureBuiltinLed() {
   pinMode(LED_BUILTIN, OUTPUT);
+
+  // Single 200ms blink
   digitalWrite(LED_BUILTIN, LOW);
   delay(200);
   digitalWrite(LED_BUILTIN, HIGH);
+}
 
-  // Setup serial port
+void configureSerialPort() {
   const int SERIAL_PORT_SPEED = 115200;
   Serial.begin(SERIAL_PORT_SPEED);
-  Serial.println("Serial port initilized");
+  Serial.println("Serial port initilized. Port Speed: " + SERIAL_PORT_SPEED);
+}
 
-  // Initialize OTA programming
-  ota->init();
-
-  // ds18b20
-  sensors.begin();
-  Serial.println("----------------");
-  Serial.println("Termometr zainicjowany");
-
+void connectWiFi(String& ssid, String& password){
   // Get WiFi creentials
   FsMapStorage wifiCredentials("/credentials.txt");
   int storedPasswordsCnt = wifiCredentials.count();
 
   // Try to connect WiFi
   for (int i=0; i<storedPasswordsCnt; i++) {
-    String wifiSsid = wifiCredentials.getSsid(i);
+    ssid = wifiCredentials.getSsid(i);
     Serial.print("Login: ");
-    Serial.println(wifiSsid);
-    String wifiPassword = wifiCredentials.getPassword(i);
+    Serial.println(ssid);
+    password = wifiCredentials.getPassword(i);
     Serial.print("Haslo: ");
-    Serial.println(wifiPassword);
-    Serial.println(String("Łaczenie z siecią ") + wifiSsid + " ...");
-    if (connectWiFi(wifiSsid.c_str(), wifiPassword.c_str())) {
+    Serial.println(password);
+    Serial.println(String("Łaczenie z siecią ") + ssid + " ...");
+    if (connectWiFi(ssid.c_str(), password.c_str())) {
       break;
     }
     Serial.println("Niepowodzenie.");
   }
+}
+
+void setup()
+{
+  configureSerialPort();
+  configureBuiltinLed();
+ 
+  // Initialize OTA programming
+  ota->init();
+
+  // ds18b20
+  sensors.begin();
+  Serial.println("Termometr zainicjowany");
+
+  String ssid, password;
+  connectWiFi(ssid, password);
 
   // Setup web server
   web.initServer();
