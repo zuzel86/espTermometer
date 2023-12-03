@@ -85,6 +85,12 @@ public:
    */
   String getL2BufferFormatted();
 
+  /**
+   * @brief Get current temperature.
+   * @return Last added temperature from the L1 buffer.
+  */
+  String getCurrentTemperature();
+
 private:
   /**
    * @brief Stores the current temprature in L1 buffer

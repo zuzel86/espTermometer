@@ -94,6 +94,14 @@ String TemperatureStorage::getL2BufferFormatted()
     return getBufferFormatted(level2Buffer);
 }
 
+String TemperatureStorage::getCurrentTemperature()
+{
+    auto temp = level1Buffer.read();
+
+    return String(temp);
+}
+
+
 //************************* Private members *************************
 
 /**
