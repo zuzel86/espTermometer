@@ -6,6 +6,11 @@ bool connectWiFi(const char* wifiSsid, const char* wifiPassword)
   int CONNECTION_TIMEOUT = 10000;
   unsigned long now = millis();
 
+  // Configures static IP address
+  // if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
+  //   Serial.println("STA Failed to configure");
+  // }
+
   //Begin WiFi
   WiFi.begin(wifiSsid, wifiPassword);
   while (WiFi.status() != WL_CONNECTED && millis() < now + CONNECTION_TIMEOUT) {

@@ -4,13 +4,10 @@
 #include <ArduinoOTA.h>
 extern ArduinoOTAClass ArduinoOTA;
 
-// Replace with your network credentials
-const char* ssid = "SyrionWiFi";
-const char* password = "lubiepsipatrol";
 
 Ota* Ota::ota = nullptr;
 
-Ota::Ota() {} //TODO Ważne: Add wifi credentials to constructor
+Ota::Ota() {}
 
 Ota* Ota::getInstance()
 {
@@ -21,16 +18,19 @@ Ota* Ota::getInstance()
     return ota;
 }
 
-void Ota::init() {
+void Ota::init(const String& ssid, const String& password) {
   Serial.println("Initializing OTA Module...");
+  Serial.println(String("Connecting to network ") + ssid + ": ...");
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
-  while (WiFi.waitForConnectResult() != WL_CONNECTED) {
-    Serial.println("Connection Failed! Rebooting...");
-    delay(5000);
-    ESP.restart();
+  if (WiFi.waitForConnectResult() != WL_CONNECTED) {
+    Serial.println("WiFi Connection Failed!");
+    return;
+    // delay(5000);
+    // ESP.restart();
   }
+  Serial.println("Wyszedłem z pętli");
 
     // Port defaults to 8266
     // ArduinoOTA.setPort(8266);

@@ -27,6 +27,12 @@ float currentTemp = 0.0;
 TemperatureStorage ts;
 const size_t MEASURE_INTERVAL = 3500;
 
+void configureSerialPort() {
+  const int SERIAL_PORT_SPEED = 115200;
+  Serial.begin(SERIAL_PORT_SPEED);
+  Serial.println("Serial port initilized. Port Speed: " + SERIAL_PORT_SPEED);
+}
+
 void configureBuiltinLed() {
   pinMode(LED_BUILTIN, OUTPUT);
 
@@ -34,12 +40,6 @@ void configureBuiltinLed() {
   digitalWrite(LED_BUILTIN, LOW);
   delay(200);
   digitalWrite(LED_BUILTIN, HIGH);
-}
-
-void configureSerialPort() {
-  const int SERIAL_PORT_SPEED = 115200;
-  Serial.begin(SERIAL_PORT_SPEED);
-  Serial.println("Serial port initilized. Port Speed: " + SERIAL_PORT_SPEED);
 }
 
 void connectWiFi(String& ssid, String& password){
@@ -67,16 +67,17 @@ void setup()
 {
   configureSerialPort();
   configureBuiltinLed();
- 
-  // Initialize OTA programming
-  ota->init();
 
   // ds18b20
   sensors.begin();
-  Serial.println("Termometr zainicjowany");
+  Serial.println("Termometr zainicjowany"); 
+
+  // Initialize OTA programming
+  ota->init("SyrionWiFi", "lubiepsipatrol");
 
   String ssid, password;
   connectWiFi(ssid, password);
+
 
   // Setup web server
   web.initServer();

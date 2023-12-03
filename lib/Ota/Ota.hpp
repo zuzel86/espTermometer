@@ -16,6 +16,6 @@ public:
     void operator=(const Ota&) = delete;
 
     static Ota* getInstance();
-    void init();
+    void init(const String& ssid, const String& password);
     void handle();
 };
