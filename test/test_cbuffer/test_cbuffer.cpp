@@ -1,8 +1,9 @@
-#include <unity.h>
+#include "cbuffer.hpp"
 
 #include <memory>
 
-#include "cbuffer.hpp"
+#include <unity.h>
+
 
 using cbuffer_int = CBuffer<int>;
 
