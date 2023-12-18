@@ -27,7 +27,10 @@ typedef std::function<void(void)> voidFuntion;
  * @param timeLeftProcedure The function that should be called if the time passed.
  * @param otherwiseProcedure The function that should be called if the time doesnt pass yet.
  * If nullptr (by default) none function will be execute in this case.
+ * @param getTime The function, that deliver current time.
+ * 
  * @return true Function timeLeftProcedure was executed.
  * @return false Function timeLeftProcedure wasn't executed.
  */
-bool executeIfTimeLeft(unsigned int pseudoThrId, unsigned long periodMs, voidFuntion timeLeftProcedure, voidFuntion otherwiseProcedure = nullptr);
+bool executeIfTimeLeft(unsigned int pseudoThrId, unsigned long periodMs, voidFuntion timeLeftProcedure, 
+                       voidFuntion otherwiseProcedure, std::function<unsigned long()> getTime);

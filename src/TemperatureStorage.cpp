@@ -1,6 +1,8 @@
 
 #include "TemperatureStorage.hpp"
 
+#include <Arduino.h>
+
 #include "pseudoThread.hpp"
 #include "stringUtils.hpp"
 
@@ -48,10 +50,10 @@ void TemperatureStorage::updateTemperature(float temperature)
 
     executeIfTimeLeft(l1pseudoThreadId, BUFFER_UPDATE_MS_INTERVAL_L1,
                         std::bind(&TemperatureStorage::storeCurrentToL1Buffer, this),
-                        std::bind(&TemperatureStorage::updateL1AvgTemperature, this));
+                        std::bind(&TemperatureStorage::updateL1AvgTemperature, this), &millis);
     executeIfTimeLeft(l2pseudoThreadId, BUFFER_UPDATE_MS_INTERVAL_L2,
                         std::bind(&TemperatureStorage::storeCurrentToL2Buffer, this),
-                        std::bind(&TemperatureStorage::updateL2AvgTemperature, this));
+                        std::bind(&TemperatureStorage::updateL2AvgTemperature, this), &millis);
 }
 
 /**

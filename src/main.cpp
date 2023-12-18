@@ -1,6 +1,7 @@
 
 #include <DallasTemperature.h>
 #include <OneWire.h>
+#include <Arduino.h>
 
 #include "ConnectWifi.hpp"
 #include "FsMapStorage.hpp"
@@ -104,7 +105,7 @@ void loop()
 
   // // read temp
   static unsigned long threadId = getIdentifier();
-  executeIfTimeLeft(threadId, MEASURE_INTERVAL, std::bind(getTemperature));
+  executeIfTimeLeft(threadId, MEASURE_INTERVAL, std::bind(getTemperature), [](){}, &millis);
 
   // // store temp
   ts.updateTemperature(currentTemp);
