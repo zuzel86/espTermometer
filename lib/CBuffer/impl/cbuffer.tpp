@@ -1,66 +1,65 @@
 
 
 template<class T>
-CBuffer<T>::CBuffer(size_t size) {
-
-    bufferSize = size;
-    buffer = new T[bufferSize];
-    ptr = 0;
-    currentSize = 0;
+CBuffer<T>::CBuffer(size_t size) : buffer_(size),
+                                   ptr_(0),
+                                   currentSize_(0) {
     clean();
 }
 
 template<class T>
-CBuffer<T>::~CBuffer() {
-    delete[] buffer;
-}
+CBuffer<T>::~CBuffer() = default;
 
 template<class T>
 void CBuffer<T>::write(T value) {
+    auto bufferSize = buffer_.size();
+
     nextPtr();
-    buffer[ptr] = value;
-    currentSize = std::min(currentSize + 1, bufferSize);
+    buffer_[ptr_] = value;
+    currentSize_ = std::min(currentSize_ + 1, bufferSize);
 }
 
 template<class T>
 size_t CBuffer<T>::getBufferSize() {
-    return bufferSize;
+    return buffer_.size();
 }
 
 template<class T>
 size_t CBuffer<T>::getCurrentSize() {
-    return currentSize;
+    return currentSize_;
 }
 
 template<class T>
 T CBuffer<T>::read() {
-    return buffer[ptr];
+    return buffer_[ptr_];
 }
 
 // TODO usunąć - Metoda tymczasowa do czasu wprowadzenia operatora []
 template<class T>
 T &CBuffer<T>::last() {
-    return buffer[ptr];
+    return buffer_[ptr_];
 }
 
 template<class T>
 void CBuffer<T>::read(T* bfr, size_t size) {
-    int tempPtr = ptr - size + 1;
+    auto bufferSize = buffer_.size();
+
+    int tempPtr = ptr_ - size + 1;
     tempPtr = tempPtr < 0 ? tempPtr + bufferSize : tempPtr;
     for (int i=0; i<size; i++) {
-        bfr[i] = buffer[(tempPtr+i) % bufferSize];
+        bfr[i] = buffer_[(tempPtr + i) % bufferSize];
     }
 }
 
 template<class T>
 void CBuffer<T>::clean() {
-    for (unsigned int i=0; i<bufferSize; i++) {
-        buffer[i] = 0;
+    for (unsigned int i=0; i < buffer_.size(); i++) {
+        buffer_[i] = 0;
     }
-    currentSize = 0;
+    currentSize_ = 0;
 }
 
 template<class T>
 void CBuffer<T>::nextPtr() {
-    ++ptr %= bufferSize;
+    ++ptr_ %= buffer_.size();
 }

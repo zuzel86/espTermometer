@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <algorithm>
 
 //TODO Poprawić c-style pointery na smartpointery.
@@ -48,13 +49,11 @@ public:
     CBuffer operator=(CBuffer& bfr) = delete;
 
 private:
-
     void nextPtr();
 
-    T* buffer;
-    unsigned int bufferSize;
-    int ptr;
-    unsigned int currentSize;
+    std::vector<T> buffer_;
+    size_t ptr_;
+    size_t currentSize_;
 };
 
 #include "impl/cbuffer.tpp"
