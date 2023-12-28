@@ -1,7 +1,8 @@
 
 
 template<class T>
-CBuffer<T>::CBuffer(int size) {
+CBuffer<T>::CBuffer(size_t size) {
+
     bufferSize = size;
     buffer = new T[bufferSize];
     ptr = 0;
@@ -22,22 +23,28 @@ void CBuffer<T>::write(T value) {
 }
 
 template<class T>
-unsigned int CBuffer<T>::getBufferSize() {
+size_t CBuffer<T>::getBufferSize() {
     return bufferSize;
 }
 
 template<class T>
-unsigned int CBuffer<T>::getCurrentSize() {
+size_t CBuffer<T>::getCurrentSize() {
     return currentSize;
 }
 
 template<class T>
-T CBuffer<T>::read(void) {
+T CBuffer<T>::read() {
+    return buffer[ptr];
+}
+
+// TODO usunąć - Metoda tymczasowa do czasu wprowadzenia operatora []
+template<class T>
+T &CBuffer<T>::last() {
     return buffer[ptr];
 }
 
 template<class T>
-void CBuffer<T>::read(T* bfr, int size) {
+void CBuffer<T>::read(T* bfr, size_t size) {
     int tempPtr = ptr - size + 1;
     tempPtr = tempPtr < 0 ? tempPtr + bufferSize : tempPtr;
     for (int i=0; i<size; i++) {

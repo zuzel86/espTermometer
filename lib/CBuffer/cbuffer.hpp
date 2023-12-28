@@ -2,13 +2,15 @@
 
 #include <algorithm>
 
+//TODO Poprawić c-style pointery na smartpointery.
+
 /**
  * @brief Template'owy bufor cykliczny
 */
 template<class T>
 class CBuffer {
 public:
-    CBuffer(int size);
+    explicit CBuffer(size_t size);
     ~CBuffer();
 
     /**
@@ -19,31 +21,35 @@ public:
     /**
      * @brief Zwraca całkowity rozmiar bufora.
     */
-    unsigned int getBufferSize();
+    size_t getBufferSize();
 
     /**
      * @brief Zwraca aktualny rozmiar bufora.
     */
-    unsigned int getCurrentSize();
+    size_t getCurrentSize();
 
     /**
      * @brief Zwraca ostatnią dodaną wartość.
     */
-    T read(void);
+    T read();
+
+    T& last();
 
     /**
      * @brief Zwraca do bufora bfr, size ostatnio dodanych wartości, zaczynając od najstarszej.
      * 
      * @param bfr 
     */
-    void read(T* bfr, int size);
+    void read(T* bfr, size_t size);
     void clean();
+
+    //TODO Zastanowić się jak powinno wyglądać kopiowanie
+    CBuffer(CBuffer& bfr) = delete;
+    CBuffer operator=(CBuffer& bfr) = delete;
 
 private:
 
     void nextPtr();
-    CBuffer(CBuffer& bfr);
-    CBuffer operator=(CBuffer& bfr);
 
     T* buffer;
     unsigned int bufferSize;

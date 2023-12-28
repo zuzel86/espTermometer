@@ -1,17 +1,18 @@
-
-
 #pragma once
+
+#include "../CBuffer/cbuffer.hpp"
 
 class MovingAverage
 {
 public:
-    MovingAverage();
+    MovingAverage(unsigned int bufferSize = 0);
 
     void update(double newValue);
     double getCurrentValue();
     void reset();
 
 private:
-    double currentAverage;
-    unsigned int count;
+    CBuffer<double> buffer_;
+    bool infinity_bufer_;
+    unsigned int count_ = 0;
 };
