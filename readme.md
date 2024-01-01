@@ -17,7 +17,7 @@
 
 ### Communication
 
-- [ ] Show current temperature (Web)
+- [*] Show current temperature (Web)
 - [ ] Show current temp (OLED)
 - [*] Show history (Web)
 - [ ] Show history (OLED)
