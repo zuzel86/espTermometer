@@ -2,8 +2,8 @@
 
 #include <vector>
 #include <algorithm>
+#include <iterator>
 
-//TODO Poprawić c-style pointery na smartpointery.
 
 /**
  * @brief Template'owy bufor cykliczny
@@ -11,6 +11,38 @@
 template<class T>
 class CBuffer {
 public:
+    struct Iterator {
+        using iterator_category = std::forward_iterator_tag;
+        using difference_type = std::ptrdiff_t;
+        using value_type = T;
+        using pointer = T*;
+        using reference = T&;
+
+        explicit Iterator(CBuffer<T>* collection, size_t element) : collection_(collection), element_(element) {}
+
+        reference operator*() const { return collection_->getElement(element_); }
+        Iterator& operator++() { ++element_; return *this; }
+        Iterator operator++(int) {
+            Iterator tmp = *this;
+            ++(*this);
+            return tmp;
+        }
+        friend bool operator== (const Iterator& a, const Iterator& b) {
+            return a.collection_ == b.collection_ && a.element_ == b.element_;
+        };
+        friend bool operator!= (const Iterator& a, const Iterator& b) {
+            return a.collection_ != b.collection_ || a.element_ != b.element_;
+        };
+
+
+    private:
+        CBuffer<T>* collection_;
+        size_t element_;
+    };
+
+    Iterator begin() { return Iterator(this, 0); }
+    Iterator end()   { return Iterator(this, currentSize_); }
+
     explicit CBuffer(size_t size);
     ~CBuffer();
 
@@ -50,6 +82,8 @@ public:
 
 private:
     void nextPtr();
+//    void prevPtr();
+    T& getElement(size_t index);
 
     std::vector<T> buffer_;
     size_t ptr_;

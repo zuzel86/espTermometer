@@ -78,6 +78,29 @@ void test_Read_BufferOverflowed_ReturnAddedValues() {
     TEST_ASSERT_EQUAL(6, read_buffer[3]);
 }
 
+void test_begin_returnsLastAddedValueIterator() {
+    buffer->write(1);
+    buffer->write(2);
+    buffer->write(3);
+
+    TEST_ASSERT_EQUAL(3, *buffer->begin());
+
+    buffer->write(4);
+    buffer->write(5);
+    buffer->write(6);
+    buffer->write(7);
+
+    TEST_ASSERT_EQUAL(7, *buffer->begin());
+}
+
+void test_iterator_iteratesOverCollection() {
+    buffer->write(1);
+
+    for(auto& el : *buffer) {
+        TEST_ASSERT_EQUAL(1, el);
+    }
+}
+
 
 int main( int argc, char **argv) {
     UNITY_BEGIN();
@@ -87,6 +110,8 @@ int main( int argc, char **argv) {
     RUN_TEST(test_Write_BufferOverflowed_CurrentSizeIsCorrect);
     RUN_TEST(test_Read_BufferNotOverflowYet_ReturnAddedValues);
     RUN_TEST(test_Read_BufferOverflowed_ReturnAddedValues);
+    RUN_TEST(test_begin_returnsLastAddedValueIterator);
+    RUN_TEST(test_iterator_iteratesOverCollection);
 
     UNITY_END();
 }

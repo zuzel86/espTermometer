@@ -2,7 +2,7 @@
 
 template<class T>
 CBuffer<T>::CBuffer(size_t size) : buffer_(size),
-                                   ptr_(0),
+                                   ptr_(buffer_.size()-1),
                                    currentSize_(0) {
     clean();
 }
@@ -62,4 +62,20 @@ void CBuffer<T>::clean() {
 template<class T>
 void CBuffer<T>::nextPtr() {
     ++ptr_ %= buffer_.size();
+}
+
+//template<class T>
+//void CBuffer<T>::prevPtr() {
+//    ptr_ = ptr_ == 0 ? buffer_.size() -1 : ptr_ --;
+//}
+
+template<class T>
+T& CBuffer<T>::getElement(size_t index) {
+
+    if (index >= buffer_.size()) {
+        return *(buffer_.end());
+    }
+
+    int delay = buffer_.size() - index;
+    return buffer_[(ptr_ + delay) % buffer_.size()];
 }
