@@ -1,11 +1,11 @@
 #pragma once
 
 #include <FS.h>
-#include <vector>
+#include "LittleFS.h"
+
 #include <map>
 #include <string>
-
-#include "LittleFS.h"
+#include <vector>
 
 /**
  * @brief Stores a map of <String, String> values in LittleFS filesystem.
@@ -14,9 +14,9 @@ class FsMapStorage
 {
 
 public:
-    FsMapStorage(const char* srcPath);
-    int count() const;
-    const String& getSsid(int index) const;
+    explicit FsMapStorage(const char* srcPath);
+    [[nodiscard]] int count() const;
+    [[nodiscard]] const String& getSsid(int index) const;
 
     /**
      * @brief Gets the WiFi Password at the given index.

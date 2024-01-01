@@ -2,7 +2,6 @@
 #include "pseudoThread.hpp"
 
 #include <map>
-#include <functional>
 
 
 unsigned long getIdentifier()
