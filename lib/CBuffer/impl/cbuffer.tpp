@@ -34,12 +34,6 @@ T CBuffer<T>::read() {
     return buffer_[ptr_];
 }
 
-// TODO usunąć - Metoda tymczasowa do czasu wprowadzenia operatora []
-template<class T>
-T &CBuffer<T>::last() {
-    return buffer_[ptr_];
-}
-
 template<class T>
 void CBuffer<T>::read(T* bfr, size_t size) {
     auto bufferSize = buffer_.size();

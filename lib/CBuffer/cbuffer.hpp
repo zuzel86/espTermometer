@@ -66,8 +66,6 @@ public:
     */
     T read();
 
-    T& last();
-
     /**
      * @brief Zwraca do bufora bfr, size ostatnio dodanych wartości, zaczynając od najstarszej.
      * 

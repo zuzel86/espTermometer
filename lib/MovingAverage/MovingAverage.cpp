@@ -15,7 +15,7 @@ void MovingAverage::update(double newValue)
 {
     if (infinity_buffer_) {
         // If buffer is no limit buffer, we store current average besides current sum.
-        auto& currentAverage = buffer_.last();
+        auto& currentAverage = *buffer_.begin();
         currentAverage = (currentAverage * count_ + newValue) / (count_ + 1);
         count_++;
     } else {
