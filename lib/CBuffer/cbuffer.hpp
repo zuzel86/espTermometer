@@ -83,7 +83,6 @@ public:
 
 private:
     void nextPtr();
-    // void prevPtr();
     T& getElement(size_t index);
 
     std::vector<T> buffer_;

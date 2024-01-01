@@ -55,11 +55,6 @@ void CBuffer<T>::nextPtr() {
     ++ptr_ %= buffer_.size();
 }
 
-//template<class T>
-//void CBuffer<T>::prevPtr() {
-//    ptr_ = ptr_ == 0 ? buffer_.size() -1 : ptr_ --;
-//}
-
 template<class T>
 T& CBuffer<T>::getElement(size_t index) {
 
