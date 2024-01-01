@@ -12,7 +12,7 @@ public:
     void reset();
 
 private:
-    CBuffer<double> buffer_;
-    bool infinity_bufer_;
-    unsigned int count_ = 0;
+    CBuffer<double> buffer_;        // Buffer to store data
+    bool infinity_buffer_;          // Stores only average and behaves like a buffer of infinity length.
+    unsigned int count_ = 0;        // Added elements counter
 };
