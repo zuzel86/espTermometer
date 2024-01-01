@@ -44,7 +44,13 @@ public:
     Iterator end()   { return Iterator(this, currentSize_); }
 
     explicit CBuffer(size_t size);
-    ~CBuffer();
+
+    // Rule of five
+    ~CBuffer() = default;
+    CBuffer(const CBuffer& other) = default;
+    CBuffer(CBuffer&& other) noexcept = default;
+    CBuffer& operator=(const CBuffer& other) = default;
+    CBuffer& operator=(CBuffer&& other) noexcept = default;
 
     /**
      * @brief Dodaje nowy element do bufora.
@@ -74,13 +80,10 @@ public:
     void read(T* bfr, size_t size);
     void clean();
 
-    //TODO Zastanowić się jak powinno wyglądać kopiowanie
-    CBuffer(CBuffer& bfr) = delete;
-    CBuffer operator=(CBuffer& bfr) = delete;
 
 private:
     void nextPtr();
-//    void prevPtr();
+    // void prevPtr();
     T& getElement(size_t index);
 
     std::vector<T> buffer_;

@@ -8,9 +8,6 @@ CBuffer<T>::CBuffer(size_t size) : buffer_(size),
 }
 
 template<class T>
-CBuffer<T>::~CBuffer() = default;
-
-template<class T>
 void CBuffer<T>::write(T value) {
     auto bufferSize = buffer_.size();
 
