@@ -60,6 +60,32 @@ void test_add_some_values_to_infinite_buffer() {
     TEST_ASSERT_EQUAL(expected, buffer.getCurrentValue());
 }
 
+void test_reset_finite_buffer() {
+    MovingAverage buffer(5);
+
+    buffer.update(1.0);
+    buffer.update(2.0);
+    buffer.update(3.0);
+    TEST_ASSERT_EQUAL(3, buffer.getCurrentSize());
+
+    buffer.reset();
+    TEST_ASSERT_EQUAL(0, buffer.getCurrentSize());
+}
+
+void test_reset_infinite_buffer() {
+    MovingAverage buffer(3);
+
+    buffer.update(1.0);
+    buffer.update(2.0);
+    buffer.update(3.0);
+    buffer.update(4.0);
+    buffer.update(5.0);
+    TEST_ASSERT_EQUAL(3, buffer.getCurrentSize());
+
+    buffer.reset();
+    TEST_ASSERT_EQUAL(0, buffer.getCurrentSize());
+}
+
 
 int main( int argc, char **argv) {
     UNITY_BEGIN();
@@ -68,6 +94,8 @@ int main( int argc, char **argv) {
     RUN_TEST(test_add_more_values_than_buffer_size);
     RUN_TEST(test_add_less_values_than_buffer_size);
     RUN_TEST(test_add_some_values_to_infinite_buffer);
+    RUN_TEST(test_reset_finite_buffer);
+    RUN_TEST(test_reset_infinite_buffer);
 
     UNITY_END();
 }

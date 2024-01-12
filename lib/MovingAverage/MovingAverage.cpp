@@ -38,3 +38,7 @@ void MovingAverage::reset()
     buffer_.clean();
     count_ = 0U;
 }
+
+size_t MovingAverage::getCurrentSize() {
+    return infinity_buffer_ ? count_ : buffer_.getCurrentSize();
+}
