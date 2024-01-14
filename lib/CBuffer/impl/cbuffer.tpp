@@ -4,7 +4,6 @@ template<class T>
 CBuffer<T>::CBuffer(size_t size) : buffer_(size),
                                    ptr_(buffer_.size()-1),
                                    currentSize_(0) {
-    clean();
 }
 
 template<class T>
@@ -44,9 +43,6 @@ void CBuffer<T>::read(T* bfr, size_t size) {
 
 template<class T>
 void CBuffer<T>::clean() {
-    for (unsigned int i=0; i < buffer_.size(); i++) {
-        buffer_[i] = 0;
-    }
     currentSize_ = 0;
 }
 

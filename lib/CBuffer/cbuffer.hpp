@@ -78,6 +78,10 @@ public:
      * @param bfr 
     */
     void read(T* bfr, size_t size);
+
+    /**
+     * @brief Set current size to 0;
+     */
     void clean();
 
 
