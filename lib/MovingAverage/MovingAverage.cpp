@@ -11,7 +11,7 @@ MovingAverage::MovingAverage(unsigned int bufferSize) : buffer_(bufferSize == 0 
 {
 }
 
-void MovingAverage::update(double newValue)
+void MovingAverage::update(float newValue)
 {
     if (infinity_buffer_) {
         // If buffer is no limit buffer, we store current average besides current sum.
@@ -23,7 +23,7 @@ void MovingAverage::update(double newValue)
     }
 }
 
-double MovingAverage::getCurrentValue()
+float MovingAverage::getCurrentValue()
 {
     if (infinity_buffer_) {
         return buffer_.read();
