@@ -26,8 +26,8 @@ size_t CBuffer<T>::getCurrentSize() {
 }
 
 template<class T>
-T CBuffer<T>::read() {
-    return buffer_[ptr_];
+const T& CBuffer<T>::read() {
+    return *begin();
 }
 
 template<class T>
@@ -53,6 +53,8 @@ void CBuffer<T>::nextPtr() {
 
 template<class T>
 T& CBuffer<T>::getElement(size_t index) {
+
+    assert(currentSize_ != 0);
 
     if (index >= buffer_.size()) {
         return *(buffer_.end());

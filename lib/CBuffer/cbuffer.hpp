@@ -70,7 +70,7 @@ public:
     /**
      * @brief Zwraca ostatnią dodaną wartość.
     */
-    T read();
+    const T& read();
 
     /**
      * @brief Zwraca do bufora bfr, size ostatnio dodanych wartości, zaczynając od najstarszej.
@@ -87,6 +87,14 @@ public:
 
 private:
     void nextPtr();
+
+    /**
+     * @brief Get element at given index.
+     * WARNING! This method ASSERTS when called on empty buffer.
+     *
+     * @param index index of element to get.
+     * @return Element at the given index.
+     */
     T& getElement(size_t index);
 
     std::vector<T> buffer_;
