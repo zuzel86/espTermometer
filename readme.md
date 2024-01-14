@@ -24,6 +24,7 @@
 
 ## Next step
 
+Logowanie błędów
 Dopięcie wyświetlacza OLED
 Multi - termometrowość
 Dopięcie diody RGB
