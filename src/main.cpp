@@ -24,8 +24,10 @@ OneWire oneWire(ONE_WIRE_BUS_PIN);
 DallasTemperature sensors(&oneWire);
 
 // Storing temperatures
-float currentTemp = 0.0;
+uint8_t sensors_count = 0;
+std::shared_ptr<std::vector<float>> currentTemps;
 TemperatureStorage ts;
+
 const size_t MEASURE_INTERVAL = 3500;
 
 void configureSerialPort() {
@@ -71,7 +73,10 @@ void setup()
 
   // ds18b20
   sensors.begin();
-  Serial.println("Termometr zainicjowany"); 
+  sensors_count = sensors.getDS18Count();
+  currentTemps = std::make_shared<std::vector<float>>(sensors_count);
+  Serial.print("Liczba znalezionych termometrów: ");
+  Serial.println(sensors_count);
 
   // Initialize OTA programming
   ota->init("SyrionWiFi", "lubiepsipatrol");
@@ -96,25 +101,33 @@ void setup()
   //     }
   // }
   // LittleFS.end();
+
+  Serial.println("Inicjalizacja zakończona");
 }
 
 void loop()
 {
-  // ota->handle();
-  web.handleClient();
+  // ota->handle();                       // TODO odkomentować
+  // web.handleClient();                  // TODO odkomentować
 
   // // read temp
   static unsigned long threadId = getIdentifier();
   executeIfTimeLeft(threadId, MEASURE_INTERVAL, std::bind(getTemperature), [](){}, &millis);
 
   // // store temp
-  ts.updateTemperature(currentTemp);
+  // ts.updateTemperature(currentTemp);   // TODO odkomentować
   delay(100);
 }
 
 
 void getTemperature() {
   sensors.requestTemperatures();
-  currentTemp = sensors.getTempCByIndex(0);
-  Serial.println(currentTemp);
+  
+  for (int i=0; i<sensors_count; i++) {
+    (*currentTemps)[i] = sensors.getTempCByIndex(i);
+    Serial.print("Zmierzono temperatur(y): ");
+    Serial.print((*currentTemps)[i]);
+    Serial.print(" ");
+  }
+  Serial.println("");
 }
