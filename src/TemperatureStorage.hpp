@@ -1,9 +1,15 @@
 #pragma once
 
+#include <memory>
+#include <vector>
+
 #include <WString.h>
 
 #include "../lib/CBuffer/cbuffer.hpp"
 #include "MovingAverage.hpp"
+
+using temp_container = std::vector<float>;
+using temp_container_ptr = std::shared_ptr<temp_container>;
 
 
 const size_t BUFFER_UPDATE_MS_INTERVAL_L1 = 15000;    // Buffer 1 store temperature ratio in ms.
@@ -22,26 +28,25 @@ const size_t BUFFER_SIZE_LEVEL2 = RANGE_TIME_H_PLOT2 * 60 * 60000 / BUFFER_UPDAT
  */
 class TemperatureStorage
 {
-  CBuffer<float> level1Buffer;
-  CBuffer<float> level2Buffer;
+  CBuffer<temp_container> level1Buffer;
+  CBuffer<temp_container> level2Buffer;
 
-  MovingAverage avgTemperatureL1;
-  MovingAverage avgTemperatureL2;
+  std::vector<MovingAverage> avgTemperatures;
 
 public:
   /**
    * @brief Construct a new Temperature Storage object.
    * Initializes the pseudo thread identifiers to use in L1 and L2 buffers.
    */
-  TemperatureStorage();
+  explicit TemperatureStorage(uint8_t sensors_count);
 
   /**
-   * @brief Sets the current temperature and updates the L1 and L2 buffers if the proper
+   * @brief Sets the current temperatures and updates the L1 and L2 buffers if the proper
    * amount of time since the last update for each buffer has left.
    *
-   * @param temperature The new temperature to store.
+   * @param temperatures The new temperatures to store.
    */
-  void updateTemperature(float temperature);
+  void updateTemperature(const temp_container_ptr& temperatures);
 
   /**
    * @brief Returns size of the L1 buffer
@@ -76,43 +81,43 @@ public:
    *
    * @return String Formatted L1 buffer
    */
-  String getL1BufferFormatted();
+  // String getL1BufferFormatted();
 
   /**
    * @brief Returns L2 buffer as a String, formatted as comma separated double values in the square bracket.
    *
    * @return String Formatted L2 buffer
    */
-  String getL2BufferFormatted();
+  // String getL2BufferFormatted();
 
   /**
    * @brief Get current temperature.
    * @return Last added temperature from the L1 buffer.
   */
-  String getCurrentTemperature();
+//  String getCurrentTemperature();
 
 private:
   /**
    * @brief Stores the current temprature in L1 buffer
    */
-  void storeCurrentToL1Buffer(void);
+  void storeCurrentToL1Buffer();
 
   /**
    * @brief Stores the current temprature in L2 buffer
    */
-  void storeCurrentToL2Buffer(void);
+  void storeCurrentToL2Buffer();
 
   /**
    * @brief Stores moving average temperature to save in L1 buffer
    * in the proper moment of time.
    */
-  void updateL1AvgTemperature(void);
+  void updateAvgTemperature();
 
   /**
    * @brief Stores moving average temperature to save in L2 buffer
    * in the proper moment of time.
    */
-  void updateL2AvgTemperature(void);
+  // void updateL2AvgTemperature(void);
 
   /**
    * @brief Get the Buffer Formatted as String.
@@ -121,7 +126,7 @@ private:
    * @param buffer Input buffer
    * @return String
    */
-  String getBufferFormatted(CBuffer<float> &buffer);
+//  String getBufferFormatted(CBuffer<float> &buffer);
 
   unsigned int l1pseudoThreadId;
   unsigned int l2pseudoThreadId;

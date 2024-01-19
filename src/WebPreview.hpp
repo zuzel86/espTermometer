@@ -12,8 +12,8 @@ class WebPreview {
 public:
 
     // Configure routings and starts the server
-    void initServer();
+    static void initServer();
 
     // handles client
-    void handleClient();
+    static void handleClient();
 };

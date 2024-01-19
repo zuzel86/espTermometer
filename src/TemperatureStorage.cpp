@@ -6,16 +6,20 @@
 #include "pseudoThread.hpp"
 #include "stringUtils.hpp"
 
-float currentTemperature = 0;
+temp_container_ptr currentTemperatures;
 
   /**
    * @brief Construct a new Temperature Storage object.
    * Initializes the pseudo thread identifiers to use in L1 and L2 buffers.
    */
-TemperatureStorage::TemperatureStorage() : level1Buffer(BUFFER_SIZE_LEVEL1), level2Buffer(BUFFER_SIZE_LEVEL2)
+TemperatureStorage::TemperatureStorage(uint8_t sensors_count) : level1Buffer(BUFFER_SIZE_LEVEL1), 
+                                                                level2Buffer(BUFFER_SIZE_LEVEL2)
 {
     l1pseudoThreadId = getIdentifier();
     l2pseudoThreadId = getIdentifier();
+    for (uint8_t i=0; i<sensors_count; i++) {
+        avgTemperatures.emplace_back(3);        // TODO Sprawdzić czemu nie działą z zerem
+    }
 }
 
 /**
@@ -39,21 +43,20 @@ size_t TemperatureStorage::getL2BufferSize()
 }
 
 /**
- * @brief Sets the current temperature and updates the L1 and L2 buffers if the proper
+ * @brief Sets the current temperatures and updates the L1 and L2 buffers if the proper
  * amount of time since the last update for each buffer has left.
  *
- * @param temperature The new temperature to store.
+ * @param temperatures The new temperatures to store.
  */
-void TemperatureStorage::updateTemperature(float temperature)
+void TemperatureStorage::updateTemperature(const temp_container_ptr& temperatures)
 {
-    currentTemperature = temperature;
+    currentTemperatures = temperatures;
+    updateAvgTemperature();
 
     executeIfTimeLeft(l1pseudoThreadId, BUFFER_UPDATE_MS_INTERVAL_L1,
-                        std::bind(&TemperatureStorage::storeCurrentToL1Buffer, this),
-                        std::bind(&TemperatureStorage::updateL1AvgTemperature, this), &millis);
+                      [this] { storeCurrentToL1Buffer(); }, [] {}, &millis);
     executeIfTimeLeft(l2pseudoThreadId, BUFFER_UPDATE_MS_INTERVAL_L2,
-                        std::bind(&TemperatureStorage::storeCurrentToL2Buffer, this),
-                        std::bind(&TemperatureStorage::updateL2AvgTemperature, this), &millis);
+                      [this] { storeCurrentToL2Buffer(); }, [] {}, &millis);
 }
 
 /**
@@ -81,70 +84,83 @@ size_t TemperatureStorage::getL2BufferCurrentSize()
  *
  * @return String Formatted L1 buffer
  */
-String TemperatureStorage::getL1BufferFormatted()
-{
-    return getBufferFormatted(level1Buffer);
-}
+// String TemperatureStorage::getL1BufferFormatted()
+// {
+//     return getBufferFormatted(level1Buffer);     // TODO Do usunięcia
+// }
 
 /**
  * @brief Returns L2 buffer as a String, formatted as comma separated double values in the square bracket.
  *
  * @return String Formatted L2 buffer
  */
-String TemperatureStorage::getL2BufferFormatted()
-{
-    return getBufferFormatted(level2Buffer);
-}
+// String TemperatureStorage::getL2BufferFormatted()    // TODO Do usunięcia
+// {
+//     return getBufferFormatted(level2Buffer);
+// }
 
-String TemperatureStorage::getCurrentTemperature()
-{
-    auto temp = level1Buffer.read();
+// String TemperatureStorage::getCurrentTemperature()       // TODO Przerobić (dodać parametr)
+// {
+//     auto temp = level1Buffer.read();
 
-    return String(temp);
-}
+//     return String(temp);
+// }
 
 
 //************************* Private members *************************
 
 /**
- * @brief Stores the average temprature in L1 buffer,
+ * @brief Stores the average temperature in L1 buffer,
  * and resets average temperature buffer.
  */
-void TemperatureStorage::storeCurrentToL1Buffer(void)
+void TemperatureStorage::storeCurrentToL1Buffer()
 {
-    updateL1AvgTemperature();
-    level1Buffer.write(avgTemperatureL1.getCurrentValue());
-    avgTemperatureL1.reset();
+    temp_container temps;
+    for (auto& avgTempBuffer : avgTemperatures) {
+        temps.push_back(avgTempBuffer.getCurrentValue());
+        avgTempBuffer.reset();
+    }
+    level1Buffer.write(temps);
 }
 
 /**
- * @brief Stores the average temprature in L2 buffer,
+ * @brief Stores the average temperature in L2 buffer,
  * and resets average temperature buffer.
  */
-void TemperatureStorage::storeCurrentToL2Buffer(void)
+void TemperatureStorage::storeCurrentToL2Buffer()
 {
-    updateL2AvgTemperature();
-    level2Buffer.write(avgTemperatureL2.getCurrentValue());
-    avgTemperatureL2.reset();
+    temp_container temps;
+    for (auto& avgTempBuffer : avgTemperatures) {
+        temps.push_back(avgTempBuffer.getCurrentValue());
+        avgTempBuffer.reset();
+    }
+    level2Buffer.write(temps);
 }
 
 /**
  * @brief Stores moving average temperature to save in L1 buffer
  * in the proper moment of time.
  */
-void TemperatureStorage::updateL1AvgTemperature(void)
+void TemperatureStorage::updateAvgTemperature()
 {
-    avgTemperatureL1.update(currentTemperature);
+    auto temperature_it = currentTemperatures->begin();
+    for (auto& avgTemp : avgTemperatures) {
+        avgTemp.update(*temperature_it);
+        temperature_it++;
+    }
+    assert(temperature_it == currentTemperatures->end());       // Wszystkie pomiary zostały przepisane
 }
 
 /**
  * @brief Stores moving average temperature to save in L2 buffer
  * in the proper moment of time.
  */
-void TemperatureStorage::updateL2AvgTemperature(void)
-{
-    avgTemperatureL2.update(currentTemperature);
-}
+// void TemperatureStorage::updateL2AvgTemperature()
+// {
+//     Serial.println("updateL2AvgTemperature()");
+
+//     avgTemperatureL2.update(currentTemperatures);
+// }
 
 /**
  * @brief Get the Buffer Formatted as String.
@@ -153,16 +169,16 @@ void TemperatureStorage::updateL2AvgTemperature(void)
  * @param buffer Input buffer
  * @return String
  */
-String TemperatureStorage::getBufferFormatted(CBuffer<float> &buffer)
-{
-    size_t size = buffer.getCurrentSize();
-    float localBuffer[size];
-    buffer.read(localBuffer, size);
-    String str = join(localBuffer, size, ", ");
-
-    String temps ("[");
-    temps += str;
-    temps += "];";
-
-    return temps;
-}
+//String TemperatureStorage::getBufferFormatted(CBuffer<float> &buffer)
+//{
+//    size_t size = buffer.getCurrentSize();
+//    float localBuffer[size];
+//    buffer.read(localBuffer, size);
+//    String str = join(localBuffer, size, ", ");
+//
+//    String temps ("[");
+//    temps += str;
+//    temps += "];";
+//
+//    return temps;
+//}

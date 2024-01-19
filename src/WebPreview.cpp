@@ -36,9 +36,12 @@ void WebPreview::handleClient() {
 }
 
 String generatePage() {
-  String temps = "temps = " + ts.getL1BufferFormatted() + ";";
-  String temps2 = "temps2 = " + ts.getL2BufferFormatted() + ";";
-  String current_temp = ts.getCurrentTemperature();
+  // String temps = "temps = " + ts.getL1BufferFormatted() + ";";       // TODO Poprawić
+  // String temps2 = "temps2 = " + ts.getL2BufferFormatted() + ";";     // TODO Poprawić
+  String temps = "";                                                    // TODO Usunąć
+  String temps2 = "";                                                   // TODO Usunąć
+  // String current_temp = ts.getCurrentTemperature();                  // TODO Poprawić
+  String current_temp = "";                                             // TODO Usunąć
 
   size_t buf1size = ts.getL1BufferCurrentSize();
   size_t buf2size = ts.getL2BufferCurrentSize();
