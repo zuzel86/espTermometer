@@ -19,7 +19,7 @@ void MovingAverage::update(float newValue)
         currentAverage = (currentAverage * count_ + newValue) / (count_ + 1);
         count_++;
     } else {
-        buffer_.write(newValue);;
+        buffer_.write(newValue);
     }
 }
 
@@ -37,6 +37,11 @@ void MovingAverage::reset()
 {
     buffer_.clean();
     count_ = 0U;
+}
+
+bool MovingAverage::isInfinityMode()
+{
+    return infinity_buffer_;
 }
 
 size_t MovingAverage::getCurrentSize() {

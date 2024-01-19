@@ -11,6 +11,7 @@ public:
     float getCurrentValue();
     size_t getCurrentSize();
     void reset();
+    bool isInfinityMode();
 
 private:
     CBuffer<float> buffer_;         // Buffer to store data
