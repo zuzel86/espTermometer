@@ -18,7 +18,7 @@ TemperatureStorage::TemperatureStorage(uint8_t sensors_count) : level1Buffer(BUF
     l1pseudoThreadId = getIdentifier();
     l2pseudoThreadId = getIdentifier();
     for (uint8_t i=0; i<sensors_count; i++) {
-        avgTemperatures.emplace_back(3);        // TODO Sprawdzić czemu nie działą z zerem
+        avgTemperatures.emplace_back(3);        // TODO Sprawdzić czemu nie działa z zerem
     }
 }
 

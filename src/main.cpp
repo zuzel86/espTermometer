@@ -33,7 +33,8 @@ const size_t MEASURE_INTERVAL = 3500;
 void configureSerialPort() {
   const int SERIAL_PORT_SPEED = 115200;
   Serial.begin(SERIAL_PORT_SPEED);
-  Serial.println("Serial port initilized. Port Speed: " + SERIAL_PORT_SPEED);
+  Serial.print("Serial port initialized. Port Speed: ");
+  Serial.println(SERIAL_PORT_SPEED);
 }
 
 void configureBuiltinLed() {
@@ -46,19 +47,19 @@ void configureBuiltinLed() {
 }
 
 void connectWiFi(String& ssid, String& password){
-  // Get WiFi creentials
+  // Get WiFi credentials
   FsMapStorage wifiCredentials("/credentials.txt");
   int storedPasswordsCnt = wifiCredentials.count();
 
-  // Try to connect WiFi
+  // Try to connect Wi-Fi
   for (int i=0; i<storedPasswordsCnt; i++) {
     ssid = wifiCredentials.getSsid(i);
     Serial.print("Login: ");
     Serial.println(ssid);
     password = wifiCredentials.getPassword(i);
-    Serial.print("Haslo: ");
+    Serial.print("Hasło: ");
     Serial.println(password);
-    Serial.println(String("Łaczenie z siecią ") + ssid + " ...");
+    Serial.println(String("Łączenie z siecią ") + ssid + " ...");
     if (connectWiFi(ssid.c_str(), password.c_str())) {
       break;
     }
