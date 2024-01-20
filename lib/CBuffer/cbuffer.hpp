@@ -6,7 +6,7 @@
 
 
 /**
- * @brief Template'owy bufor cykliczny
+ * @brief Bufor cykliczny (template)
 */
 template<class T>
 class CBuffer {
