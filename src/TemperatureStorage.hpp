@@ -98,12 +98,12 @@ public:
 
 private:
   /**
-   * @brief Stores the current temprature in L1 buffer
+   * @brief Stores the current temperature in L1 buffer
    */
   void storeCurrentToL1Buffer();
 
   /**
-   * @brief Stores the current temprature in L2 buffer
+   * @brief Stores the current temperature in L2 buffer
    */
   void storeCurrentToL2Buffer();
 
@@ -121,7 +121,7 @@ private:
 
   /**
    * @brief Get the Buffer Formatted as String.
-   * The String format is a comma, separated double valuse in square bracket.
+   * The String format is a comma, separated double values in square bracket.
    *
    * @param buffer Input buffer
    * @return String
