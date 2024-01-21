@@ -7,7 +7,7 @@
 #include "LittleFS.h"
 #include "stringUtils.hpp"
 
-extern TemperatureStorage ts;
+extern std::shared_ptr<TemperatureStorage> ts;
 
 
 String generatePage();
@@ -38,13 +38,14 @@ void WebPreview::handleClient() {
 String generatePage() {
   // String temps = "temps = " + ts.getL1BufferFormatted() + ";";       // TODO Poprawić
   // String temps2 = "temps2 = " + ts.getL2BufferFormatted() + ";";     // TODO Poprawić
+  String current_temp = ts->getCurrentTemperatures(", ");
   String temps = "";                                                    // TODO Usunąć
   String temps2 = "";                                                   // TODO Usunąć
-  // String current_temp = ts.getCurrentTemperature();                  // TODO Poprawić
-  String current_temp = "";                                             // TODO Usunąć
 
-  size_t buf1size = ts.getL1BufferCurrentSize();
-  size_t buf2size = ts.getL2BufferCurrentSize();
+//  auto bfr = ts->getL1SingleBuffer(0);
+
+  size_t buf1size = ts->getL1BufferCurrentSize();
+  size_t buf2size = ts->getL2BufferCurrentSize();
   int tempArgs[buf1size];
   for (unsigned int i=0; i<buf1size; i++) {
     tempArgs[i] = i;
@@ -69,7 +70,7 @@ String generatePage() {
   LittleFS.begin();
   File _file = LittleFS.open("/page.html", "r");
   if (!_file) {
-    return String("Nie znaleziono pliku page.html.");
+    return {"Nie znaleziono pliku page.html."};
   }
 
   while (_file.available()) {

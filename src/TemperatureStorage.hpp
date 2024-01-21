@@ -77,6 +77,24 @@ public:
   size_t getL2BufferCurrentSize();
 
   /**
+   * @brief Returns L1 buffer for specific thermometer.
+   *
+   * @param sensor_number Number of sensor on 1-wire line
+   *
+   * @return L1 buffer for specific sensor.
+   */
+  std::vector<float> getL1SingleBuffer(uint8_t sensor_number);
+
+  /**
+   * @brief Returns L1 buffer for specific thermometer.
+   *
+   * @param sensor_number Number of sensor on 1-wire line
+   *
+   * @return L1 buffer for specific sensor.
+   */
+  std::vector<float> getL2SingleBuffer(uint8_t sensor_number);
+
+  /**
    * @brief Returns L1 buffer as a String, formatted as comma separated double values in the square bracket.
    *
    * @return String Formatted L1 buffer
@@ -91,10 +109,13 @@ public:
   // String getL2BufferFormatted();
 
   /**
-   * @brief Get current temperature.
-   * @return Last added temperature from the L1 buffer.
+   * @brief Get current temperatures
+   *
+   * @param separator String that separates temperatures
+   * .
+   * @return Last temperature that was measured.
   */
-//  String getCurrentTemperature();
+  static String getCurrentTemperatures(const String& separator);
 
 private:
   /**
@@ -112,6 +133,24 @@ private:
    * in the proper moment of time.
    */
   void updateAvgTemperature();
+
+  /**
+   * @param buffer Source data buffer.
+   * @param sensor_number number of temperature sensor in 1-wire line.
+   * @return Measurement results from single sensor.
+   */
+  static std::vector<float> getSingleSensorResults(CBuffer<temp_container>& buffer, uint8_t sensor_number);
+
+  // TODO [refactor] Przenieść w bardziej ogólne miejsce
+  /**
+   * @brief Format the collection of floats to string.
+   *
+   * @param numbers_collection Source collection.
+   * @param separator Separator string
+   *
+   * @return Values from collection separated by separator.
+   */
+  static String vectorFloatToString(const std::vector<float>& numbers_collection, const String& separator);
 
   /**
    * @brief Stores moving average temperature to save in L2 buffer

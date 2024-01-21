@@ -6,7 +6,7 @@
 #include "pseudoThread.hpp"
 #include "stringUtils.hpp"
 
-temp_container_ptr currentTemperatures;
+temp_container_ptr currentTemperatures;         // TODO Zastanowić się czy to nie powinno być schowane w obiekcie
 
   /**
    * @brief Construct a new Temperature Storage object.
@@ -99,12 +99,10 @@ size_t TemperatureStorage::getL2BufferCurrentSize()
 //     return getBufferFormatted(level2Buffer);
 // }
 
-// String TemperatureStorage::getCurrentTemperature()       // TODO Przerobić (dodać parametr)
-// {
-//     auto temp = level1Buffer.read();
-
-//     return String(temp);
-// }
+ String TemperatureStorage::getCurrentTemperatures(const String& separator)
+ {
+     return vectorFloatToString(*currentTemperatures, separator);
+ }
 
 
 //************************* Private members *************************
@@ -149,6 +147,36 @@ void TemperatureStorage::updateAvgTemperature()
         temperature_it++;
     }
     assert(temperature_it == currentTemperatures->end());       // Wszystkie pomiary zostały przepisane
+}
+
+std::vector<float> TemperatureStorage::getL1SingleBuffer(uint8_t sensor_number) {
+    return getSingleSensorResults(level1Buffer, sensor_number);
+}
+
+std::vector<float> TemperatureStorage::getL2SingleBuffer(uint8_t sensor_number) {
+    return getSingleSensorResults(level2Buffer, sensor_number);
+}
+
+// TODO Dodać const-iterator do CBuffer i zmienić na const
+std::vector<float> TemperatureStorage::getSingleSensorResults(CBuffer<temp_container> &buffer, uint8_t sensor_number) {
+    auto result = std::vector<float>();
+    for (auto& results : buffer) {            
+        result.push_back(results[sensor_number]);
+    }
+
+    return result;
+}
+
+String TemperatureStorage::vectorFloatToString(const std::vector<float>& numbers_collection, const String& separator) {
+    auto result = String();
+    for(const auto& sensor_n : numbers_collection) {
+        if (&sensor_n != &*(*currentTemperatures).begin()) {
+            result += separator;
+        }
+        result += sensor_n;
+    }
+
+    return result;
 }
 
 /**

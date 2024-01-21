@@ -112,7 +112,7 @@ void setup()
 void loop()
 {
   // ota->handle();                       // TODO odkomentować
-  // web.handleClient();                  // TODO odkomentować
+  web.handleClient();
 
   // // read temp
   static unsigned long threadId = getIdentifier();
