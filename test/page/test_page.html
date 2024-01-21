@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pl-PL">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+<body>
+<h1> Temperatura </h1>
+<canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+
+</body>
+
+<script>
+
+    /**
+     * @brief Generates array of random integers that looks nice on chart.
+     *
+     * @param size size of array to generate
+     * @param min beginning of initial value range
+     * @param max end  of initial value range
+     * @param maxDiff maximal difference between the current and nest value
+     *
+     * @returns {*[]} Array with random data to present on chart.
+     */
+    function generateData(size, min, max, maxDiff) {
+        let current = (max + min) / 2;
+        let result = [];
+        for (let i = 1; i <= size; i++) {
+            let dirChange = Math.random() > 0.5 ? -1 : 1;
+            result.push(current = current + maxDiff * Math.random() * dirChange);
+        }
+        return result;
+    }
+
+    // let payload = [[1, 2, 3, 8, 9], [4, 5, 6, 5, 1], [1, 5, 9, 10, 9]]
+    let payload = [
+        generateData(50, 15, 27, 1),
+        generateData(50, 15, 27, 1),
+        generateData(50, 15, 27, 1),
+    ];
+
+    let len = payload[0].length;
+    let chart_data = []
+    let chart_labels = Array.from({ length: len }, (_, index) => (len * -1) + index + 1);
+
+    payload.forEach((row) => {
+        chart_data.push({
+            data: row,
+            borderColor: "green",
+            fill: true
+        })
+    })
+
+    new Chart("myChart", {
+        type: "line",
+        data: {
+            labels: chart_labels,
+            datasets: chart_data,
+        },
+        options: {},
+    });
+
+</script>
