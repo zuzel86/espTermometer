@@ -8,6 +8,7 @@
 #include "stringUtils.hpp"
 
 extern std::shared_ptr<TemperatureStorage> ts;
+extern uint8_t sensors_count;
 
 
 String generatePage();
@@ -36,33 +37,24 @@ void WebPreview::handleClient() {
 }
 
 String generatePage() {
-  // String temps = "temps = " + ts.getL1BufferFormatted() + ";";       // TODO Poprawić
-  // String temps2 = "temps2 = " + ts.getL2BufferFormatted() + ";";     // TODO Poprawić
+
   String current_temp = ts->getCurrentTemperatures(", ");
-  String temps = "";                                                    // TODO Usunąć
-  String temps2 = "";                                                   // TODO Usunąć
 
-//  auto bfr = ts->getL1SingleBuffer(0);
-
-  size_t buf1size = ts->getL1BufferCurrentSize();
-  size_t buf2size = ts->getL2BufferCurrentSize();
-  int tempArgs[buf1size];
-  for (unsigned int i=0; i<buf1size; i++) {
-    tempArgs[i] = i;
+  String L1_payload = "L1_payload = [";
+  for (uint8_t i=0; i<sensors_count; i++) {
+      L1_payload += "[";
+      L1_payload += ts->getL1BufferFormatted(", ", i);
+      L1_payload += "],";
   }
+  L1_payload += "];";
 
-  int tempArgs2[buf2size];
-  for (unsigned int i=0; i<buf2size; i++) {
-    tempArgs2[i] = i;
+  String L2_payload = "L2_payload = [";
+  for (uint8_t i=0; i<sensors_count; i++) {
+      L2_payload += "[";
+      L2_payload += ts->getL2BufferFormatted(", ", i);
+      L2_payload += "],";
   }
-
-  String times("times = [");
-  times += join(tempArgs, buf1size, ", ");
-  times += "];";
-
-  String times2("times2 = [");
-  times2 += join(tempArgs2, buf2size, ", ");
-  times2 += "];";
+  L2_payload += "];";
 
   String content;
 
@@ -76,12 +68,9 @@ String generatePage() {
   while (_file.available()) {
       String line = _file.readStringUntil('\n');
 
-      // Make substitutions
-      if (line == String("{{times}}")) line = times;
-      if (line == String("{{temps}}")) line = temps;
-      if (line == String("{{times2}}")) line = times2;
-      if (line == String("{{temps2}}")) line = temps2;
       if (line == String("{{current_temp}}")) line = current_temp;
+      if (line == String("{{L1_payload}}")) line = L1_payload;
+      if (line == String("{{L2_payload}}")) line = L2_payload;
 
       content += line;
   }

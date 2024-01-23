@@ -117,6 +117,17 @@ public:
   */
   static String getCurrentTemperatures(const String& separator);
 
+  /**
+   * @brief 
+   *
+   * @param separator
+   * @param sensor_index
+   * @return
+   */
+  String getL1BufferFormatted(const String& separator, uint8_t sensor_index);
+
+  String getL2BufferFormatted(const String& separator, uint8_t sensor_index);
+
 private:
   /**
    * @brief Stores the current temperature in L1 buffer

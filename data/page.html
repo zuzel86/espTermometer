@@ -1,36 +1,55 @@
 <!DOCTYPE html>
-<html>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
-<body>
-<h3> Aktualna temperatura: </h3>
-<h1>
+<html lang="pl-PL">
+    <head>
+        <title>Rejestrator temperatury</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    </head>
+    <body>
+        <h3> Aktualna temperatura: </h3>
+        <h1>
 {{current_temp}}
-</h1>
-<h2> Ostatnia godzina (aktualizacja co 15s)</h2>
-<canvas id="chart_x" style="width:100%;max-width:1200px"></canvas>
-<h2> Ostatnie 5 godzin (aktualizacja co 1 min)</h2>
-<canvas id="chart_xx" style="width:100%;max-width:1200px"></canvas>
-
-</body>
+        </h1>
+        <h2> Ostatnia godzina (aktualizacja co 15s)</h2>
+        <canvas id="chart_x" style="width:100%;max-width:1200px"></canvas>
+        <h2> Ostatnie 5 godzin (aktualizacja co 1 min)</h2>
+        <canvas id="chart_xx" style="width:100%;max-width:1200px"></canvas>
+    </body>
 </html>
 
 <script>
 
-{{times}}
-{{temps}}
+{{L1_payload}}
+{{L2_payload}}
 
-{{times2}}
-{{temps2}}
+let L1_len = L1_payload[0].length;
+let L1_chart_data = [];
+let L1_chart_labels = Array.from({ length: L1_len }, (_, index) => (L1_len * -1) + index + 1);
+
+let L2_len = L2_payload[0].length;
+let L2_chart_data = [];
+let L2_chart_labels = Array.from({ length: L2_len }, (_, index) => (L2_len * -1) + index + 1);
+
+L1_payload.forEach((row) => {
+    L1_chart_data.push({
+        data: row,
+        borderColor: "green",
+        fill: true
+    })
+});
+
+L2_payload.forEach((row) => {
+    L2_chart_data.push({
+        data: row,
+        borderColor: "green",
+        fill: true
+    })
+});
 
 new Chart("chart_x", {
     type: "line",
     data: {
-        labels: times,
-        datasets: [{
-            data: temps,
-            borderColor: "green",
-            fill: false,
-        }],
+        labels: L1_chart_labels,
+        datasets: L1_chart_data,
     },
     options: {},
 });
@@ -38,12 +57,8 @@ new Chart("chart_x", {
 new Chart("chart_xx", {
     type: "line",
     data: {
-        labels: times2,
-        datasets: [{
-            data: temps2,
-            borderColor: "green",
-            fill: false,
-        }],
+        labels: L2_chart_labels,
+        datasets: L2_chart_data,
     },
     options: {},
 });

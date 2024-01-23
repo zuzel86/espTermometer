@@ -164,19 +164,29 @@ std::vector<float> TemperatureStorage::getSingleSensorResults(CBuffer<temp_conta
         result.push_back(results[sensor_number]);
     }
 
+    std::reverse(result.begin(), result.end());
     return result;
 }
 
 String TemperatureStorage::vectorFloatToString(const std::vector<float>& numbers_collection, const String& separator) {
     auto result = String();
     for(const auto& sensor_n : numbers_collection) {
-        if (&sensor_n != &*(*currentTemperatures).begin()) {
-            result += separator;
-        }
+//        if (&sensor_n != &*(*currentTemperatures).begin()) {
+//            result += separator;
+//        } TODO zobaczyć czemu nie działa
         result += sensor_n;
+        result += separator;
     }
 
     return result;
+}
+
+String TemperatureStorage::getL1BufferFormatted(const String &separator, uint8_t sensor_index) {
+    return vectorFloatToString(getSingleSensorResults(level1Buffer, sensor_index), separator);
+}
+
+String TemperatureStorage::getL2BufferFormatted(const String &separator, uint8_t sensor_index) {
+    return vectorFloatToString(getSingleSensorResults(level2Buffer, sensor_index), separator);
 }
 
 /**
