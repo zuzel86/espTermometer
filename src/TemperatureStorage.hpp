@@ -48,33 +48,6 @@ public:
    */
   void updateTemperature(const temp_container_ptr& temperatures);
 
-  /**
-   * @brief Returns size of the L1 buffer
-   *
-   * @return size_t L1 buffer size.
-   */
-  size_t getL1BufferSize();
-
-  /**
-   * @brief Returns size of the L2 buffer
-   *
-   * @return size_t L2 buffer size.
-   */
-  size_t getL2BufferSize();
-
-  /**
-   * @brief Returns the current size of L1 buffer
-   *
-   * @return size_t Current L1 buffer size.
-   */
-  size_t getL1BufferCurrentSize();
-
-  /**
-   * @brief Returns the current size of L2 buffer
-   *
-   * @return size_t Current L2 buffer size.
-   */
-  size_t getL2BufferCurrentSize();
 
   /**
    * @brief Returns L1 buffer for specific thermometer.
@@ -93,20 +66,6 @@ public:
    * @return L1 buffer for specific sensor.
    */
   std::vector<float> getL2SingleBuffer(uint8_t sensor_number);
-
-  /**
-   * @brief Returns L1 buffer as a String, formatted as comma separated double values in the square bracket.
-   *
-   * @return String Formatted L1 buffer
-   */
-  // String getL1BufferFormatted();
-
-  /**
-   * @brief Returns L2 buffer as a String, formatted as comma separated double values in the square bracket.
-   *
-   * @return String Formatted L2 buffer
-   */
-  // String getL2BufferFormatted();
 
   /**
    * @brief Get current temperatures
@@ -163,20 +122,6 @@ private:
    */
   static String vectorFloatToString(const std::vector<float>& numbers_collection, const String& separator);
 
-  /**
-   * @brief Stores moving average temperature to save in L2 buffer
-   * in the proper moment of time.
-   */
-  // void updateL2AvgTemperature(void);
-
-  /**
-   * @brief Get the Buffer Formatted as String.
-   * The String format is a comma, separated double values in square bracket.
-   *
-   * @param buffer Input buffer
-   * @return String
-   */
-//  String getBufferFormatted(CBuffer<float> &buffer);
 
   unsigned int l1pseudoThreadId;
   unsigned int l2pseudoThreadId;

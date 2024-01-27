@@ -8,10 +8,10 @@
 
 temp_container_ptr currentTemperatures;         // TODO Zastanowić się czy to nie powinno być schowane w obiekcie
 
-  /**
-   * @brief Construct a new Temperature Storage object.
-   * Initializes the pseudo thread identifiers to use in L1 and L2 buffers.
-   */
+/**
+* @brief Construct a new Temperature Storage object.
+* Initializes the pseudo thread identifiers to use in L1 and L2 buffers.
+*/
 TemperatureStorage::TemperatureStorage(uint8_t sensors_count) : level1Buffer(BUFFER_SIZE_LEVEL1), 
                                                                 level2Buffer(BUFFER_SIZE_LEVEL2)
 {
@@ -20,26 +20,6 @@ TemperatureStorage::TemperatureStorage(uint8_t sensors_count) : level1Buffer(BUF
     for (uint8_t i=0; i<sensors_count; i++) {
         avgTemperatures.emplace_back(3);        // TODO Sprawdzić czemu nie działa z zerem
     }
-}
-
-/**
- * @brief Returns size of the L1 buffer
- *
- * @return size_t L1 buffer size.
- */
-size_t TemperatureStorage::getL1BufferSize()
-{
-    return level1Buffer.getBufferSize();
-}
-
-/**
- * @brief Returns size of the L2 buffer
- *
- * @return size_t L2 buffer size.
- */
-size_t TemperatureStorage::getL2BufferSize()
-{
-    return level2Buffer.getBufferSize();
 }
 
 /**
@@ -59,45 +39,6 @@ void TemperatureStorage::updateTemperature(const temp_container_ptr& temperature
                       [this] { storeCurrentToL2Buffer(); }, [] {}, &millis);
 }
 
-/**
- * @brief Returns the current size of L1 buffer
- *
- * @return size_t Current L1 buffer size.
- */
-size_t TemperatureStorage::getL1BufferCurrentSize()
-{
-    return level1Buffer.getCurrentSize();
-}
-
-/**
- * @brief Returns the current size of L2 buffer
- *
- * @return size_t Current L2 buffer size.
- */
-size_t TemperatureStorage::getL2BufferCurrentSize()
-{
-    return level2Buffer.getCurrentSize();
-}
-
-/**
- * @brief Returns L1 buffer as a String, formatted as comma separated double values in the square bracket.
- *
- * @return String Formatted L1 buffer
- */
-// String TemperatureStorage::getL1BufferFormatted()
-// {
-//     return getBufferFormatted(level1Buffer);     // TODO Do usunięcia
-// }
-
-/**
- * @brief Returns L2 buffer as a String, formatted as comma separated double values in the square bracket.
- *
- * @return String Formatted L2 buffer
- */
-// String TemperatureStorage::getL2BufferFormatted()    // TODO Do usunięcia
-// {
-//     return getBufferFormatted(level2Buffer);
-// }
 
  String TemperatureStorage::getCurrentTemperatures(const String& separator)
  {
@@ -189,34 +130,4 @@ String TemperatureStorage::getL2BufferFormatted(const String &separator, uint8_t
     return vectorFloatToString(getSingleSensorResults(level2Buffer, sensor_index), separator);
 }
 
-/**
- * @brief Stores moving average temperature to save in L2 buffer
- * in the proper moment of time.
- */
-// void TemperatureStorage::updateL2AvgTemperature()
-// {
-//     Serial.println("updateL2AvgTemperature()");
 
-//     avgTemperatureL2.update(currentTemperatures);
-// }
-
-/**
- * @brief Get the Buffer Formatted as String.
- * The String format is a comma, separated double valuse in square bracket.
- *
- * @param buffer Input buffer
- * @return String
- */
-//String TemperatureStorage::getBufferFormatted(CBuffer<float> &buffer)
-//{
-//    size_t size = buffer.getCurrentSize();
-//    float localBuffer[size];
-//    buffer.read(localBuffer, size);
-//    String str = join(localBuffer, size, ", ");
-//
-//    String temps ("[");
-//    temps += str;
-//    temps += "];";
-//
-//    return temps;
-//}
