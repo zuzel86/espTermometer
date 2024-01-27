@@ -57,7 +57,6 @@ void TemperatureStorage::storeCurrentToL1Buffer()
     temp_container temps;
     for (auto& avgTempBuffer : avgTemperatures) {
         temps.push_back(avgTempBuffer.getCurrentValue());
-        avgTempBuffer.reset();
     }
     level1Buffer.write(temps);
 }
@@ -71,7 +70,6 @@ void TemperatureStorage::storeCurrentToL2Buffer()
     temp_container temps;
     for (auto& avgTempBuffer : avgTemperatures) {
         temps.push_back(avgTempBuffer.getCurrentValue());
-        avgTempBuffer.reset();
     }
     level2Buffer.write(temps);
 }
@@ -115,6 +113,10 @@ String TemperatureStorage::vectorFloatToString(const std::vector<float>& numbers
 //        if (&sensor_n != &*(*currentTemperatures).begin()) {
 //            result += separator;
 //        } TODO zobaczyć czemu nie działa
+//        if (sensor_n == sensor_n) {         // test na NaN
+//            Serial.println("Znalazłem NaN");
+//        }
+//        Serial.println(sensor_n);
         result += sensor_n;
         result += separator;
     }

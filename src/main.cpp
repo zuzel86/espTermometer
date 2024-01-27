@@ -79,7 +79,7 @@ void setup()
   Serial.print("Liczba znalezionych termometrów: ");
   Serial.println(sensors_count);
 
-  // Tems
+  // Temps
   ts = std::make_shared<TemperatureStorage>(sensors_count);
 
   // Initialize OTA programming

@@ -25,11 +25,13 @@ void MovingAverage::update(float newValue)
 
 float MovingAverage::getCurrentValue()
 {
+//    assert(getCurrentSize() == 0);
+
     if (infinity_buffer_) {
         return buffer_.read();
     } else {
-        auto sum = std::accumulate(buffer_.begin(), buffer_.end(), 0.0);
-        return sum / static_cast<double>(buffer_.getCurrentSize());
+        auto sum = std::accumulate(buffer_.begin(), buffer_.end(), 0.0f);
+        return sum / static_cast<float>(buffer_.getCurrentSize());
     }
 }
 
