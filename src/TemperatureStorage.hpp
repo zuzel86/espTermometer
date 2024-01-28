@@ -28,10 +28,14 @@ const size_t BUFFER_SIZE_LEVEL2 = RANGE_TIME_H_PLOT2 * 60 * 60000 / BUFFER_UPDAT
  */
 class TemperatureStorage
 {
+  temp_container_ptr currentTemps;
+  std::vector<MovingAverage> avgTemperatures;
   CBuffer<temp_container> level1Buffer;
   CBuffer<temp_container> level2Buffer;
 
-  std::vector<MovingAverage> avgTemperatures;
+  unsigned int l1pseudoThreadId;
+  unsigned int l2pseudoThreadId;
+
 
 public:
   /**
@@ -41,13 +45,14 @@ public:
   explicit TemperatureStorage(uint8_t sensors_count);
 
   /**
-   * @brief Sets the current temperatures and updates the L1 and L2 buffers if the proper
-   * amount of time since the last update for each buffer has left.
-   *
-   * @param temperatures The new temperatures to store.
-   */
-  void updateTemperature(const temp_container_ptr& temperatures);
+   * @brief Updates the buffers L1 and/or L2 if the proper since last update time left.
+  */
+  void updateBuffers();
 
+  /**
+   * @brief Sets the new temperature to buffer, then updates the avg buffer and L1/L2 bufdfers.
+  */
+  void setNewTemperatures(const temp_container& temps);
 
   /**
    * @brief Returns L1 buffer for specific thermometer.
@@ -74,7 +79,7 @@ public:
    * .
    * @return Last temperature that was measured.
   */
-  static String getCurrentTemperatures(const String& separator);
+  String getCurrentTemperatures(const String& separator);
 
   /**
    * @brief 
@@ -121,8 +126,4 @@ private:
    * @return Values from collection separated by separator.
    */
   static String vectorFloatToString(const std::vector<float>& numbers_collection, const String& separator);
-
-
-  unsigned int l1pseudoThreadId;
-  unsigned int l2pseudoThreadId;
 };

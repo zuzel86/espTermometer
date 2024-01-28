@@ -6,7 +6,6 @@
 #include "pseudoThread.hpp"
 #include "stringUtils.hpp"
 
-temp_container_ptr currentTemperatures;         // TODO Zastanowić się czy to nie powinno być schowane w obiekcie
 
 /**
 * @brief Construct a new Temperature Storage object.
@@ -17,32 +16,35 @@ TemperatureStorage::TemperatureStorage(uint8_t sensors_count) : level1Buffer(BUF
 {
     l1pseudoThreadId = getIdentifier();
     l2pseudoThreadId = getIdentifier();
+    currentTemps = std::make_shared<std::vector<float>>(sensors_count);
     for (uint8_t i=0; i<sensors_count; i++) {
         avgTemperatures.emplace_back(3);        // TODO Sprawdzić czemu nie działa z zerem
     }
 }
 
-/**
- * @brief Sets the current temperatures and updates the L1 and L2 buffers if the proper
- * amount of time since the last update for each buffer has left.
- *
- * @param temperatures The new temperatures to store.
- */
-void TemperatureStorage::updateTemperature(const temp_container_ptr& temperatures)
+void TemperatureStorage::updateBuffers()
 {
-    currentTemperatures = temperatures;
-    updateAvgTemperature();
-
     executeIfTimeLeft(l1pseudoThreadId, BUFFER_UPDATE_MS_INTERVAL_L1,
                       [this] { storeCurrentToL1Buffer(); }, [] {}, &millis);
     executeIfTimeLeft(l2pseudoThreadId, BUFFER_UPDATE_MS_INTERVAL_L2,
                       [this] { storeCurrentToL2Buffer(); }, [] {}, &millis);
 }
 
+void TemperatureStorage::setNewTemperatures(const temp_container& temps) {
+
+    // Sets the last measured temperature
+    auto temps_ptr = temps.begin();
+    for (auto& sensor_temp : *currentTemps) {
+        sensor_temp = *(temps_ptr++);
+    }
+
+    updateAvgTemperature();
+    updateBuffers();
+}
 
  String TemperatureStorage::getCurrentTemperatures(const String& separator)
  {
-     return vectorFloatToString(*currentTemperatures, separator);
+     return vectorFloatToString(*currentTemps, separator);
  }
 
 
@@ -80,12 +82,12 @@ void TemperatureStorage::storeCurrentToL2Buffer()
  */
 void TemperatureStorage::updateAvgTemperature()
 {
-    auto temperature_it = currentTemperatures->begin();
+    auto temperature_it = currentTemps->begin();
     for (auto& avgTemp : avgTemperatures) {
         avgTemp.update(*temperature_it);
         temperature_it++;
     }
-    assert(temperature_it == currentTemperatures->end());       // Wszystkie pomiary zostały przepisane
+    assert(temperature_it == currentTemps->end());       // Wszystkie pomiary zostały przepisane
 }
 
 std::vector<float> TemperatureStorage::getL1SingleBuffer(uint8_t sensor_number) {
@@ -113,10 +115,6 @@ String TemperatureStorage::vectorFloatToString(const std::vector<float>& numbers
 //        if (&sensor_n != &*(*currentTemperatures).begin()) {
 //            result += separator;
 //        } TODO zobaczyć czemu nie działa
-//        if (sensor_n == sensor_n) {         // test na NaN
-//            Serial.println("Znalazłem NaN");
-//        }
-//        Serial.println(sensor_n);
         result += sensor_n;
         result += separator;
     }

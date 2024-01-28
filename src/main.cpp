@@ -10,13 +10,10 @@
 #include "TemperatureStorage.hpp"
 #include "WebPreview.hpp"
 
-void getTemperature();
+temp_container getTemperatures();
 
 // On the air programming
 Ota* ota = Ota::getInstance();
-
-// Create a new web server
-WebPreview web;
 
 // DS18b20
 const int ONE_WIRE_BUS_PIN = 4;
@@ -25,7 +22,6 @@ DallasTemperature sensors(&oneWire);
 
 // Storing temperatures
 uint8_t sensors_count = 0;
-temp_container_ptr currentTemps;
 std::shared_ptr<TemperatureStorage> ts;
 
 const size_t MEASURE_INTERVAL = 3500;
@@ -75,7 +71,6 @@ void setup()
   // ds18b20
   sensors.begin();
   sensors_count = sensors.getDS18Count();
-  currentTemps = std::make_shared<std::vector<float>>(sensors_count);
   Serial.print("Liczba znalezionych termometrów: ");
   Serial.println(sensors_count);
 
@@ -90,7 +85,7 @@ void setup()
 
 
   // Setup web server
-  web.initServer();
+  WebPreview::initServer();
 
   // Serial.println("Fs: `");
   // LittleFS.begin();
@@ -112,26 +107,27 @@ void setup()
 void loop()
 {
   // ota->handle();                       // TODO odkomentować
-  web.handleClient();
+  WebPreview::handleClient();
 
-  // // read temp
+  // read & store temp
   static unsigned long threadId = getIdentifier();
-  executeIfTimeLeft(threadId, MEASURE_INTERVAL, [] { return getTemperature(); }, [](){}, &millis);
+  executeIfTimeLeft(threadId, MEASURE_INTERVAL, [] { ts->setNewTemperatures(getTemperatures()); }, [](){}, &millis);
 
-  // // store temp
-  ts->updateTemperature(currentTemps);
   delay(100);
 }
 
 
-void getTemperature() {
+temp_container getTemperatures() {
   sensors.requestTemperatures();
-  
+
+  temp_container temps;
   Serial.print("Zmierzono temperatur(y): ");
   for (int i=0; i<sensors_count; i++) {
-    (*currentTemps)[i] = sensors.getTempCByIndex(i);
-    Serial.print((*currentTemps)[i]);
+    temps.push_back(sensors.getTempCByIndex(i));
+    Serial.print(sensors.getTempCByIndex(i));
     Serial.print(" ");
   }
   Serial.println("");
+
+    return temps;
 }

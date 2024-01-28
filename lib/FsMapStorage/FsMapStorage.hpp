@@ -15,7 +15,20 @@ class FsMapStorage
 
 public:
     explicit FsMapStorage(const char* srcPath);
+
+    /**
+     * @brief Get the number of stored WiFi credentials.
+     * 
+     * @return number of credentials
+    */
     [[nodiscard]] int count() const;
+
+    /**
+     * @brief Gets the WiFi SSID at the given index.
+     * 
+     * @param index Index of WiFi SSID to return.
+     * @return const String& SSID
+    */
     [[nodiscard]] const String& getSsid(int index) const;
 
     /**
